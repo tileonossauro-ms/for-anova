@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase.js'
 import Pagamentos from './Pagamentos.jsx'
 
@@ -28,7 +28,7 @@ export default function Precos() {
 
   const carregarProdutos = useCallback(async () => {
     const { data } = await supabase.from('produtos')
-      .select('id, descricao, tabela_bruta, multiplicador_desconto, custo_atual, travado, tipo_preco, marcas(nome), categorias(nome)')
+      .select('id, codigo, descricao, tabela_bruta, multiplicador_desconto, custo_atual, travado, tipo_preco, marcas(nome), categorias(nome)')
       .order('descricao')
     setProdutos(data || [])
     const { data: ov } = await supabase.from('produto_indice_regiao').select('produto_id, regiao_id, indice')
@@ -101,6 +101,14 @@ export default function Precos() {
     await carregarProdutos(); await carregarPrecos(cols); flash(`Taxa aplicada a ${alvo.length} produto(s)`)
   }
   function toggleSel(id) { setSel(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n }) }
+  function selecionarTodos() { setSel(new Set(filtrados.filter(p => !p.travado).map(p => p.id))) }
+  function limparSel() { setSel(new Set()) }
+
+  // barra de rolagem no TOPO, sincronizada com a tabela
+  const topRef = useRef(null), tblRef = useRef(null)
+  const larguraTabela = 460 + colunas.length * 210
+  function syncFromTop() { if (tblRef.current && topRef.current) tblRef.current.scrollLeft = topRef.current.scrollLeft }
+  function syncFromTbl() { if (tblRef.current && topRef.current) topRef.current.scrollLeft = tblRef.current.scrollLeft }
 
   const stickyL = { position: 'sticky', left: 0, background: '#fff', zIndex: 1 }
   const stickyL2 = { position: 'sticky', left: 40, background: '#fff', zIndex: 1 }
@@ -116,7 +124,9 @@ export default function Precos() {
 
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <input className="input flex-1 min-w-[180px]" placeholder="Buscar produto…" value={busca} onChange={e => setBusca(e.target.value)} />
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm flex-wrap">
+          <button className="py-2 px-3 rounded-lg border border-[var(--fn-border)]" onClick={selecionarTodos}>Selecionar todos</button>
+          <button className="py-2 px-2 text-[var(--fn-muted)]" onClick={limparSel}>limpar</button>
           <span className="text-[var(--fn-muted)]">{sel.size} selec.</span>
           <div className="flex rounded-lg border border-[var(--fn-border)] overflow-hidden">
             <button onClick={() => setMassaSinal('+')} className={'px-2 py-2 ' + (massaSinal === '+' ? 'bg-[var(--fn-brand)] text-white' : '')}>+</button>
@@ -143,13 +153,18 @@ export default function Precos() {
           )
         })}
       </div>
-      <div className="text-xs text-[var(--fn-muted)] mb-1">← use a barra de rolagem para ver todas as regiões →</div>
+      <div className="text-xs text-[var(--fn-muted)] mb-1">← use a barra de rolagem (em cima ou embaixo) para ver todas as regiões →</div>
 
-      {impostosDe && <GerenciadorImpostos regiao={regioes.find(r => r.id === impostosDe)}
+      {impostosDe && <GerenciadorMult regiao={regioes.find(r => r.id === impostosDe)}
         onClose={() => setImpostosDe(null)} onChange={() => carregarPrecos(cols)} />}
 
-      <div className="card p-0" style={{ overflowX: 'scroll' }}>
-        <table className="text-sm border-collapse" style={{ minWidth: 460 + colunas.length * 210 }}>
+      {/* barra de rolagem no topo, sincronizada com a tabela */}
+      <div ref={topRef} onScroll={syncFromTop} style={{ overflowX: 'auto', overflowY: 'hidden' }} className="mb-1">
+        <div style={{ width: larguraTabela, height: 1 }} />
+      </div>
+
+      <div ref={tblRef} onScroll={syncFromTbl} className="card p-0" style={{ overflowX: 'scroll' }}>
+        <table className="text-sm border-collapse" style={{ minWidth: larguraTabela }}>
           <thead>
             <tr className="text-[var(--fn-muted)]">
               <th style={stickyL} className="p-2 border-b border-[var(--fn-border)]"></th>
@@ -162,7 +177,7 @@ export default function Precos() {
                   <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
                     <span>{r.nome}</span>
                     <EditHeader r={r} onSave={salvarTaxaRegiao} />
-                    <button onClick={() => setImpostosDe(r.id)} className="text-[var(--fn-brand)]">+ imposto</button>
+                    <button onClick={() => setImpostosDe(r.id)} className="text-[var(--fn-brand)]">+ MULT</button>
                   </div>
                 </th>
               ))}
@@ -186,7 +201,7 @@ export default function Precos() {
                   <td style={{ ...stickyL2, background: p.travado ? '#fffbeb' : '#fff' }} className="p-2">
                     <div className="font-medium leading-snug min-w-[180px]">{p.descricao}</div>
                     <div className="text-xs text-[var(--fn-muted)]">
-                      {[p.marcas?.nome, p.categorias?.nome].filter(Boolean).join(' · ')}
+                      {[p.codigo && 'RG ' + p.codigo, p.marcas?.nome, p.categorias?.nome].filter(Boolean).join(' · ')}
                       <button onClick={() => alternarTravado(p)} className="ml-2 underline">{p.travado ? 'destravar' : 'travar'}</button>
                     </div>
                   </td>
@@ -298,10 +313,11 @@ function EditHeader({ r, onSave }) {
     : <button className="text-[var(--fn-muted)]" onClick={abrir} title="taxa geral da região">✎ {pct}%</button>
 }
 
-function GerenciadorImpostos({ regiao, onClose, onChange }) {
+// Gerenciador de MULT por região: um % nomeado que soma (+) ou desconta (−)
+function GerenciadorMult({ regiao, onClose, onChange }) {
   const [lista, setLista] = useState([])
   const [nome, setNome] = useState('')
-  const [tipo, setTipo] = useState('imposto')
+  const [sinal, setSinal] = useState('+')
   const [valor, setValor] = useState('')
   async function carregar() {
     const { data } = await supabase.from('componentes_preco').select('*').eq('regiao_id', regiao.id).order('ordem')
@@ -311,32 +327,33 @@ function GerenciadorImpostos({ regiao, onClose, onChange }) {
   async function adicionar() {
     if (!nome.trim()) return
     const raw = numDot(valor); if (raw == null) return
-    await supabase.from('componentes_preco').insert({ nome: nome.trim(), tipo, valor: raw / 100, regiao_id: regiao.id, ordem: 100 })
+    const tipo = sinal === '-' ? 'desconto' : 'percentual'
+    await supabase.from('componentes_preco').insert({ nome: nome.trim(), tipo, valor: Math.abs(raw) / 100, regiao_id: regiao.id, ordem: 100 })
     setNome(''); setValor(''); await carregar(); onChange()
   }
   async function remover(id) { await supabase.from('componentes_preco').delete().eq('id', id); await carregar(); onChange() }
   return (
     <div className="card p-4 mb-3">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-bold">Impostos e taxas — {regiao.nome}</h3>
+        <h3 className="font-bold">Multiplicadores (MULT) — {regiao.nome}</h3>
         <button onClick={onClose} className="text-[var(--fn-muted)]">fechar ×</button>
       </div>
       <div className="divide-y divide-[var(--fn-border)] mb-3">
         {lista.length === 0 && <div className="text-sm text-[var(--fn-muted)] py-1">Nenhum ainda.</div>}
         {lista.map(c => (
           <div key={c.id} className="flex items-center justify-between py-1.5 text-sm">
-            <span>{c.nome} <span className="text-[var(--fn-muted)]">· {c.tipo} {(c.valor * 100).toLocaleString('pt-BR')}%</span></span>
+            <span>{c.nome} <span className={c.tipo === 'desconto' ? 'text-red-600' : 'text-green-700'}>
+              {c.tipo === 'desconto' ? '−' : '+'}{(c.valor * 100).toLocaleString('pt-BR')}%</span></span>
             <button className="text-red-500" onClick={() => remover(c.id)}>remover</button>
           </div>
         ))}
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 items-center">
         <input className="input flex-1 min-w-[140px]" placeholder="Nome (ex.: ICMS, Frete)" value={nome} onChange={e => setNome(e.target.value)} />
-        <select className="input w-36" value={tipo} onChange={e => setTipo(e.target.value)}>
-          <option value="imposto">Imposto (+%)</option>
-          <option value="percentual">Taxa (+%)</option>
-          <option value="desconto">Desconto (−%)</option>
-        </select>
+        <div className="flex rounded-lg border border-[var(--fn-border)] overflow-hidden">
+          <button onClick={() => setSinal('+')} className={'px-3 py-2 ' + (sinal === '+' ? 'bg-[var(--fn-brand)] text-white' : '')}>somar +</button>
+          <button onClick={() => setSinal('-')} className={'px-3 py-2 ' + (sinal === '-' ? 'bg-red-600 text-white' : '')}>descontar −</button>
+        </div>
         <input className="input w-28" placeholder="valor %" value={valor} onChange={e => setValor(e.target.value)} />
         <button className="btn-primary py-2 px-4" onClick={adicionar}>Adicionar</button>
       </div>
