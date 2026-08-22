@@ -18,7 +18,7 @@ export default function Layout({ children }) {
             <NavLink to="/" className={linkCls} end>Catálogo</NavLink>
             <NavLink to="/orcamento" className={linkCls}>Orçamento</NavLink>
             <NavLink to="/vendas" className={linkCls}>Vendas</NavLink>
-            {isAdmin && <NavLink to="/regras" className={linkCls}>Regras de Preço</NavLink>}
+            {isAdmin && <NavLink to="/regras" className={linkCls}>Preços</NavLink>}
             {isAdmin && <NavLink to="/compras" className={linkCls}>Compras</NavLink>}
             {isAdmin && <NavLink to="/estoque" className={linkCls}>Estoque</NavLink>}
             {isAdmin && <NavLink to="/usuarios" className={linkCls}>Usuários</NavLink>}

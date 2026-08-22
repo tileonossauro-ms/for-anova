@@ -5,7 +5,7 @@ import NotConfigured from './pages/NotConfigured.jsx'
 import Login from './pages/Login.jsx'
 import Layout from './components/Layout.jsx'
 import Catalogo from './pages/Catalogo.jsx'
-import Regras from './pages/Regras.jsx'
+import Precos from './pages/Precos.jsx'
 import Compras from './pages/Compras.jsx'
 import Vendas from './pages/Vendas.jsx'
 import Estoque from './pages/Estoque.jsx'
@@ -27,7 +27,7 @@ export default function App() {
         <Route path="/" element={<Catalogo />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/orcamento" element={<Orcamento />} />
-        <Route path="/regras" element={<Regras />} />
+        <Route path="/regras" element={<Precos />} />
         <Route path="/compras" element={<Compras />} />
         <Route path="/vendas" element={<Vendas />} />
         <Route path="/estoque" element={<Estoque />} />
