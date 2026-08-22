@@ -6,6 +6,7 @@ import Login from './pages/Login.jsx'
 import Layout from './components/Layout.jsx'
 import Catalogo from './pages/Catalogo.jsx'
 import Precos from './pages/Precos.jsx'
+import Pagamentos from './pages/Pagamentos.jsx'
 import Compras from './pages/Compras.jsx'
 import Vendas from './pages/Vendas.jsx'
 import Estoque from './pages/Estoque.jsx'
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/orcamento" element={<Orcamento />} />
         <Route path="/regras" element={<Precos />} />
+        <Route path="/pagamentos" element={<Pagamentos />} />
         <Route path="/compras" element={<Compras />} />
         <Route path="/vendas" element={<Vendas />} />
         <Route path="/estoque" element={<Estoque />} />
