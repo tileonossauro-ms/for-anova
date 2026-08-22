@@ -21,6 +21,7 @@ export default function Layout({ children }) {
             {isAdmin && <NavLink to="/regras" className={linkCls}>Regras de Preço</NavLink>}
             {isAdmin && <NavLink to="/compras" className={linkCls}>Compras</NavLink>}
             {isAdmin && <NavLink to="/estoque" className={linkCls}>Estoque</NavLink>}
+            {isAdmin && <NavLink to="/usuarios" className={linkCls}>Usuários</NavLink>}
           </nav>
           <div className="hidden sm:block text-sm text-[var(--fn-muted)]">{profile?.nome}</div>
           <button onClick={signOut} className="text-sm text-[var(--fn-muted)] hover:text-red-600 px-2">

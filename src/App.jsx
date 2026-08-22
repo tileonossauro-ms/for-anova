@@ -11,6 +11,7 @@ import Vendas from './pages/Vendas.jsx'
 import Estoque from './pages/Estoque.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Orcamento from './pages/Orcamento.jsx'
+import Usuarios from './pages/Usuarios.jsx'
 
 export default function App() {
   if (!isConfigured) return <NotConfigured />
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/compras" element={<Compras />} />
         <Route path="/vendas" element={<Vendas />} />
         <Route path="/estoque" element={<Estoque />} />
+        <Route path="/usuarios" element={<Usuarios />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
