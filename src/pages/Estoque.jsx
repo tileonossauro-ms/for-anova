@@ -82,6 +82,8 @@ export default function Estoque() {
     <div className="space-y-4">
       {msg && <div className="fixed top-16 right-4 bg-[var(--fn-brand)] text-white px-4 py-2 rounded-lg shadow z-30">{msg}</div>}
 
+      <CadastroProduto onCriado={flash} />
+
       <div className="card p-4">
         <h1 className="font-bold mb-3">Estoque</h1>
         <label className="block text-sm text-[var(--fn-muted)] mb-1">Região / estoque</label>
@@ -174,4 +176,65 @@ export default function Estoque() {
 function rotuloTipo(t) {
   return { entrada: 'Entrada', venda: 'Venda', ajuste: 'Saída/ajuste',
     transferencia_saida: 'Transf. saída', transferencia_entrada: 'Transf. entrada' }[t] || t
+}
+
+// Cadastro de produto — mesmo padrão do resto do sistema: código, nome, marca, categoria
+function CadastroProduto({ onCriado }) {
+  const [marcas, setMarcas] = useState([])
+  const [categorias, setCategorias] = useState([])
+  const [f, setF] = useState({ codigo: '', descricao: '', marca: '', categoria: '' })
+  const [erro, setErro] = useState('')
+
+  async function carregar() {
+    const [{ data: m }, { data: c }] = await Promise.all([
+      supabase.from('marcas').select('nome').order('nome'),
+      supabase.from('categorias').select('nome').order('nome'),
+    ])
+    setMarcas((m || []).map(x => x.nome)); setCategorias((c || []).map(x => x.nome))
+  }
+  useEffect(() => { carregar() }, [])
+
+  async function acharOuCriar(tabela, nome) {
+    const n = nome.trim(); if (!n) return null
+    const { data: ex } = await supabase.from(tabela).select('id').eq('nome', n).maybeSingle()
+    if (ex) return ex.id
+    const { data: novo, error } = await supabase.from(tabela).insert({ nome: n }).select('id').single()
+    if (error) throw error
+    return novo.id
+  }
+
+  async function salvar() {
+    setErro('')
+    if (!f.descricao.trim()) { setErro('Informe o nome do produto'); return }
+    try {
+      const marca_id = f.marca ? await acharOuCriar('marcas', f.marca) : null
+      const categoria_id = f.categoria ? await acharOuCriar('categorias', f.categoria) : null
+      const { error } = await supabase.from('produtos').insert({
+        codigo: f.codigo.trim() || null, descricao: f.descricao.trim(),
+        marca_id, categoria_id, tipo_preco: 'motor',
+      })
+      if (error) throw error
+      setF({ codigo: '', descricao: '', marca: '', categoria: '' })
+      await carregar(); onCriado('Produto cadastrado')
+    } catch (e) { setErro('Erro: ' + e.message) }
+  }
+
+  return (
+    <details className="card p-0">
+      <summary className="p-3 font-medium cursor-pointer select-none">Cadastrar produto</summary>
+      <div className="p-3 border-t border-[var(--fn-border)] grid sm:grid-cols-2 gap-2">
+        <input className="input" placeholder="Código / RG" value={f.codigo} onChange={e => setF(s => ({ ...s, codigo: e.target.value }))} />
+        <input className="input" placeholder="Nome do equipamento" value={f.descricao} onChange={e => setF(s => ({ ...s, descricao: e.target.value }))} />
+        <input className="input" placeholder="Marca" list="lista-marcas" value={f.marca} onChange={e => setF(s => ({ ...s, marca: e.target.value }))} />
+        <input className="input" placeholder="Categoria (ex.: Usados, Roçadeira)" list="lista-categorias" value={f.categoria} onChange={e => setF(s => ({ ...s, categoria: e.target.value }))} />
+        <datalist id="lista-marcas">{marcas.map(m => <option key={m} value={m} />)}</datalist>
+        <datalist id="lista-categorias">{categorias.map(c => <option key={c} value={c} />)}</datalist>
+        {erro && <div className="sm:col-span-2 text-sm text-red-600">{erro}</div>}
+        <div className="sm:col-span-2">
+          <button className="btn-primary py-2 px-4" onClick={salvar}>Cadastrar produto</button>
+          <span className="text-xs text-[var(--fn-muted)] ml-3">Marca/categoria novas são criadas automaticamente. O preço se configura na tela Preços.</span>
+        </div>
+      </div>
+    </details>
+  )
 }
