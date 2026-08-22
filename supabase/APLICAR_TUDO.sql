@@ -263,6 +263,9 @@ end $$;
 -- =====================================================================
 -- p_custo_override: se informado, calcula como se o custo fosse esse (prévia
 -- de Nova Compra). Chamadas de 2 args continuam válidas (default null).
+-- Remove a versão antiga de 2 args (de bancos já aplicados) para não haver
+-- ambiguidade de sobrecarga com a versão de 3 args abaixo.
+drop function if exists fn_calcular_preco(uuid, uuid);
 create or replace function fn_calcular_preco(
   p_produto uuid, p_regiao uuid, p_custo_override numeric default null
 )
