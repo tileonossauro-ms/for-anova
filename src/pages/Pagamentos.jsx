@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase.js'
 const numDot = v => { const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? null : n }
 
 // Desconto (ou acréscimo) por tipo de pagamento. Aplicado sobre o preço da região.
-export default function Pagamentos() {
+export default function Pagamentos({ embutido = false }) {
   const [itens, setItens] = useState([])
   const [novo, setNovo] = useState('')
   const [msg, setMsg] = useState('')
@@ -37,13 +37,20 @@ export default function Pagamentos() {
     <div className="space-y-4">
       {msg && <div className="fixed top-16 right-4 bg-[var(--fn-brand)] text-white px-4 py-2 rounded-lg shadow z-30">{msg}</div>}
 
-      <div className="card p-4">
-        <h1 className="font-bold mb-1">Desconto por tipo de pagamento</h1>
+      {!embutido && (
+        <div className="card p-4">
+          <h1 className="font-bold mb-1">Desconto por tipo de pagamento</h1>
+          <p className="text-sm text-[var(--fn-muted)]">
+            Valor negativo = desconto (ex.: Pix −3%). Valor positivo = acréscimo (ex.: Boleto 3x +4%).
+            Aplicado sobre o preço final da região.
+          </p>
+        </div>
+      )}
+      {embutido && (
         <p className="text-sm text-[var(--fn-muted)]">
-          Valor negativo = desconto (ex.: Pix −3%). Valor positivo = acréscimo (ex.: Boleto 3x +4%).
-          Aplicado sobre o preço final da região.
+          Negativo = desconto (Pix −3%) · positivo = acréscimo (Boleto 3x +4%). Aplicado sobre o preço da região.
         </p>
-      </div>
+      )}
 
       <div className="card p-0 divide-y divide-[var(--fn-border)]">
         {itens.map(f => (

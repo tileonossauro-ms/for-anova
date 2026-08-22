@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
+import Pagamentos from './Pagamentos.jsx'
 
 const nf = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
 const num = v => { const n = parseFloat(String(v).replace(/\./g, '').replace(',', '.')); return isNaN(n) ? null : n }
@@ -105,6 +106,12 @@ export default function Precos() {
   return (
     <div>
       {msg && <div className="fixed top-16 right-4 bg-[var(--fn-brand)] text-white px-4 py-2 rounded-lg shadow z-30">{msg}</div>}
+
+      {/* descontos por tipo de pagamento (no topo) */}
+      <details className="card p-0 mb-4">
+        <summary className="p-3 font-medium cursor-pointer select-none">Descontos por tipo de pagamento</summary>
+        <div className="px-3 pb-3 border-t border-[var(--fn-border)]"><Pagamentos embutido /></div>
+      </details>
 
       {/* barra de massa */}
       <div className="flex flex-wrap items-center gap-2 mb-3">

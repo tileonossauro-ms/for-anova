@@ -16,11 +16,7 @@ export default function Layout({ children }) {
           <nav className="flex gap-1 flex-1 overflow-x-auto">
             {isAdmin && <NavLink to="/dashboard" className={linkCls}>Painel</NavLink>}
             <NavLink to="/" className={linkCls} end>Catálogo</NavLink>
-            <NavLink to="/orcamento" className={linkCls}>Orçamento</NavLink>
-            <NavLink to="/vendas" className={linkCls}>Vendas</NavLink>
             {isAdmin && <NavLink to="/regras" className={linkCls}>Preços</NavLink>}
-            {isAdmin && <NavLink to="/pagamentos" className={linkCls}>Pagamentos</NavLink>}
-            {isAdmin && <NavLink to="/compras" className={linkCls}>Compras</NavLink>}
             {isAdmin && <NavLink to="/estoque" className={linkCls}>Estoque</NavLink>}
             {isAdmin && <NavLink to="/usuarios" className={linkCls}>Usuários</NavLink>}
           </nav>
