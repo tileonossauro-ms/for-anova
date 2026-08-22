@@ -14,10 +14,12 @@ export default function Layout({ children }) {
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-2">
           <div className="font-extrabold text-[var(--fn-brand)] mr-2">Força Nova</div>
           <nav className="flex gap-1 flex-1 overflow-x-auto">
+            {isAdmin && <NavLink to="/dashboard" className={linkCls}>Painel</NavLink>}
             <NavLink to="/" className={linkCls} end>Catálogo</NavLink>
+            <NavLink to="/orcamento" className={linkCls}>Orçamento</NavLink>
+            <NavLink to="/vendas" className={linkCls}>Vendas</NavLink>
             {isAdmin && <NavLink to="/regras" className={linkCls}>Regras de Preço</NavLink>}
             {isAdmin && <NavLink to="/compras" className={linkCls}>Compras</NavLink>}
-            <NavLink to="/vendas" className={linkCls}>Vendas</NavLink>
             {isAdmin && <NavLink to="/estoque" className={linkCls}>Estoque</NavLink>}
           </nav>
           <div className="hidden sm:block text-sm text-[var(--fn-muted)]">{profile?.nome}</div>

@@ -9,6 +9,8 @@ import Regras from './pages/Regras.jsx'
 import Compras from './pages/Compras.jsx'
 import Vendas from './pages/Vendas.jsx'
 import Estoque from './pages/Estoque.jsx'
+import Dashboard from './pages/Dashboard.jsx'
+import Orcamento from './pages/Orcamento.jsx'
 
 export default function App() {
   if (!isConfigured) return <NotConfigured />
@@ -22,6 +24,8 @@ export default function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<Catalogo />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/orcamento" element={<Orcamento />} />
         <Route path="/regras" element={<Regras />} />
         <Route path="/compras" element={<Compras />} />
         <Route path="/vendas" element={<Vendas />} />
