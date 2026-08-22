@@ -39,8 +39,9 @@ export default function Precos() {
 
   const carregarPrecos = useCallback(async (regsIds) => {
     if (!regsIds || regsIds.length === 0) { setPrecos({}); return }
-    const { data } = await supabase.rpc('fn_catalogo_multi', { p_regioes: regsIds })
-    const m = {}; (data || []).forEach(r => { m[`${r.produto_id}:${r.regiao_id}`] = r.preco }); setPrecos(m)
+    // grade do admin: preço CALCULADO de todos os produtos (o motor sempre calcula)
+    const { data } = await supabase.rpc('fn_grade_precos', { p_regioes: regsIds })
+    const m = {}; (data || []).forEach(r => { m[`${r.produto_id}:${r.regiao_id}`] = r.preco_calculado }); setPrecos(m)
   }, [])
 
   useEffect(() => { carregarRegioes(); carregarProdutos() }, [carregarRegioes, carregarProdutos])
@@ -175,7 +176,6 @@ export default function Precos() {
           </thead>
           <tbody>
             {filtrados.slice(0, 200).map(p => {
-              const manual = p.tipo_preco === 'manual'
               return (
                 <tr key={p.id} className={'border-t border-[var(--fn-border)] ' + (p.travado ? 'bg-amber-50' : '')}>
                   <td style={{ ...stickyL, background: p.travado ? '#fffbeb' : '#fff' }} className="p-2 text-center">
@@ -184,10 +184,7 @@ export default function Precos() {
                       : <input type="checkbox" checked={sel.has(p.id)} onChange={() => toggleSel(p.id)} />}
                   </td>
                   <td style={{ ...stickyL2, background: p.travado ? '#fffbeb' : '#fff' }} className="p-2">
-                    <div className="font-medium leading-snug min-w-[180px]">
-                      {p.descricao}
-                      {manual && <span className="ml-2 text-[10px] bg-amber-100 text-amber-700 rounded px-1.5 py-0.5">manual</span>}
-                    </div>
+                    <div className="font-medium leading-snug min-w-[180px]">{p.descricao}</div>
                     <div className="text-xs text-[var(--fn-muted)]">
                       {[p.marcas?.nome, p.categorias?.nome].filter(Boolean).join(' · ')}
                       <button onClick={() => alternarTravado(p)} className="ml-2 underline">{p.travado ? 'destravar' : 'travar'}</button>
@@ -204,7 +201,7 @@ export default function Precos() {
                     const ind = indiceEfetivo(p, r)
                     const exc = overrides[`${p.id}:${r.id}`] != null
                     return (
-                      <FragTaxa key={r.id} ind={ind} exc={exc} manual={manual} preco={precos[`${p.id}:${r.id}`]}
+                      <FragTaxa key={r.id} ind={ind} exc={exc} preco={precos[`${p.id}:${r.id}`]}
                         onSave={frac => salvarExcecao(p, r, frac)} />
                     )
                   })}
@@ -218,7 +215,7 @@ export default function Precos() {
         <span>clique num valor pra editar</span>
         <span className="text-green-700">↗ aumento</span>
         <span className="text-red-600">↘ diminuição</span>
-        <span><span className="bg-amber-100 text-amber-700 rounded px-1">manual</span> = preço fixo (não vem do custo)</span>
+        <span>o motor calcula o preço de todo produto (custo × taxa × impostos)</span>
         {filtrados.length > 200 && <span>mostrando 200 de {filtrados.length} — refine a busca</span>}
       </div>
     </div>
@@ -249,7 +246,7 @@ function FragTaxaHead() {
   )
 }
 
-function FragTaxa({ ind, exc, manual, preco, onSave }) {
+function FragTaxa({ ind, exc, preco, onSave }) {
   const [edit, setEdit] = useState(false)
   const [sinal, setSinal] = useState('+')
   const [v, setV] = useState('')
@@ -277,7 +274,7 @@ function FragTaxa({ ind, exc, manual, preco, onSave }) {
               {ind >= 0 ? '↗ +' : '↘ '}{pct}%{exc ? ' *' : ''}
             </button>}
       </td>
-      <td className={'p-2 text-right font-semibold whitespace-nowrap ' + (manual ? 'text-amber-700' : 'text-[var(--fn-brand)]')}>
+      <td className="p-2 text-right font-semibold whitespace-nowrap text-[var(--fn-brand)]">
         {preco == null ? '—' : nf.format(preco)}
       </td>
     </>
