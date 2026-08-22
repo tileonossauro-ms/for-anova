@@ -1,0 +1,35 @@
+@import 'tailwindcss';
+
+/* Paleta sóbria, profissional — sem excesso de gradiente (seção 31) */
+:root {
+  --fn-bg: #f6f7f9;
+  --fn-card: #ffffff;
+  --fn-border: #e4e7ec;
+  --fn-text: #1a1d21;
+  --fn-muted: #667085;
+  --fn-brand: #15803d;      /* verde "Força Nova" sóbrio */
+  --fn-brand-dark: #166534;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--fn-bg);
+  color: var(--fn-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* utilitários pequenos reaproveitados */
+.card { background: var(--fn-card); border: 1px solid var(--fn-border); border-radius: 12px; }
+.btn-primary {
+  background: var(--fn-brand); color: #fff; border-radius: 10px;
+  padding: 10px 16px; font-weight: 600; transition: background .15s;
+}
+.btn-primary:hover { background: var(--fn-brand-dark); }
+.btn-primary:disabled { opacity: .5; }
+.input {
+  width: 100%; border: 1px solid var(--fn-border); border-radius: 10px;
+  padding: 10px 12px; background: #fff; outline: none;
+}
+.input:focus { border-color: var(--fn-brand); box-shadow: 0 0 0 3px rgb(21 128 61 / .12); }

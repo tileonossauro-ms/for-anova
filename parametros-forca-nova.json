@@ -1,0 +1,101 @@
+{
+  "_fonte": "LPI COMPLETA - NOVA - SUL-SUDESTE.xlsx / aba GERAL ATUAL (extração real 2026-08-22)",
+  "_observacao": "Índices extraídos das fórmulas VIVAS da planilha. Substituem o JSON antigo (desatualizado). Todos editáveis no sistema.",
+  "fator_custo": {
+    "valor_sugerido": 0.4288,
+    "variacao_observada": [
+      0.4216,
+      0.4286,
+      0.4291,
+      0.4505
+    ],
+    "regra": "custo NÃO é um único fator fixo. Marcos informa o custo real da nota fiscal por produto. tabela_bruta × 0,4288 serve apenas como SUGESTÃO/fallback.",
+    "multipl_desconto_alt": 0.4651
+  },
+  "regioes": [
+    {
+      "codigo": "MS_DDOS",
+      "nome": "MS Dourados",
+      "indice": 0.45,
+      "indice_alt": null,
+      "prazo_30_60_90": "x1,04",
+      "origem": "coluna Q/R"
+    },
+    {
+      "codigo": "MS_ANDREI",
+      "nome": "MS Andréi",
+      "indice": 0.42,
+      "indice_alt": 0.4,
+      "origem": "coluna T"
+    },
+    {
+      "codigo": "VENDA_DIRETA_MS",
+      "nome": "Venda Direta MS (à vista + ICMS 1,60%)",
+      "indice": "por produto (coluna M)",
+      "origem": "coluna N",
+      "validar": true
+    },
+    {
+      "codigo": "SP_SP",
+      "nome": "SP → SP (filial SP)",
+      "indice": 0.3,
+      "indice_alt": 0.31,
+      "origem": "coluna U"
+    },
+    {
+      "codigo": "SP_OUTROS",
+      "nome": "SP → Outros",
+      "indice": 0.34,
+      "indice_alt": 0.35,
+      "origem": "coluna W"
+    },
+    {
+      "codigo": "SP_RJ_MG_SUL",
+      "nome": "SP/RJ/MG/Sul",
+      "indice": 0.38,
+      "indice_alt": null,
+      "origem": "coluna Z"
+    }
+  ],
+  "regioes_bloco_outras_marcas": [
+    {
+      "codigo": "DOURADOS_MS",
+      "nome": "Venda/entrega Dourados-MS",
+      "tipo": "manual",
+      "origem": "coluna L"
+    },
+    {
+      "codigo": "SP_MONTAGEM",
+      "nome": "NF SP p/ São Paulo (c/ montagem)",
+      "tipo": "manual",
+      "origem": "coluna Q"
+    },
+    {
+      "codigo": "OUTROS_ES",
+      "nome": "NF SP p/ Outros Estados",
+      "tipo": "manual",
+      "origem": "coluna U"
+    },
+    {
+      "codigo": "MG_RJ_SUL",
+      "nome": "NF SP p/ MG/RJ/PR/SC/RS",
+      "tipo": "manual",
+      "origem": "coluna W"
+    }
+  ],
+  "impostos_referenciados": {
+    "_obs": "Citados em textos de cabeçalho — NÃO confirmados como aplicados em fórmula. VALIDAR com Marcos antes de usar.",
+    "SP_antecipa": "25%",
+    "SP_efetivo": "22%",
+    "MS_antecipa": "19%",
+    "MS_efetivo": "15,9%",
+    "ICMS_venda_direta": "1,60%",
+    "outros_citados": [
+      "1,7%"
+    ]
+  },
+  "arredondamento": {
+    "observado": "muitos preços terminam em 990 ou 900 (ex.: 68990, 72990)",
+    "regra": "a confirmar: arredondamento comercial para ...990"
+  }
+}

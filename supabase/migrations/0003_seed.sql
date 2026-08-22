@@ -1,0 +1,2437 @@
+-- 0003_seed.sql — 248 produtos reais (cada linha = 1 produto; duplicatas sinalizadas, não fundidas).
+
+insert into regioes (codigo,nome,indice_padrao,ordem) values
+  ('MS_DDOS','MS Dourados',0.45,10),
+  ('MS_ANDREI','MS Andréi',0.42,20),
+  ('VENDA_DIRETA_MS','Venda Direta MS',0,30),
+  ('SP_SP','SP → SP',0.3,40),
+  ('SP_OUTROS','SP → Outros',0.34,50),
+  ('SP_RJ_MG_SUL','SP/RJ/MG/Sul',0.38,60),
+  ('DOURADOS_MS','Dourados/MS (outras marcas)',0,70),
+  ('SP_MONTAGEM','NF SP p/ SP c/ montagem',0,80),
+  ('OUTROS_ES','NF SP p/ Outros Estados',0,90),
+  ('MG_RJ_SUL','NF SP p/ MG/RJ/Sul',0,100)
+on conflict (codigo) do nothing;
+
+insert into marcas (nome) values
+  ('PICCIN'),
+  ('ALMEIDA')
+on conflict (nome) do nothing;
+
+insert into categorias (nome) values
+  ('USADOS'),
+  ('TRATOR'),
+  ('MENTA'),
+  ('PULV "CIMAG"'),
+  ('PULVERIZADOR'),
+  ('COMPOSTADOR'),
+  ('ROÇADEIRA'),
+  ('PERFURADOR'),
+  ('BROCA 9'),
+  ('BROCA 12'),
+  ('BROCA 18'),
+  ('GUINCHO BAG'),
+  ('GUINCHO-800'),
+  ('GUINCHO 3 PO'),
+  ('PLATAFORMA'),
+  ('PLAININHA'),
+  ('PATROLINHA'),
+  ('PATROLA'),
+  ('CONCHINHA'),
+  ('CONCHA PD'),
+  ('CONCHA PCA'),
+  ('SAB BAG'),
+  ('ROLO FACA'),
+  ('SCRAPER'),
+  ('SUBSOLADOR'),
+  ('ARADO AIVECA'),
+  ('GRANELEIRA'),
+  ('ADUBADEIRA'),
+  ('CALCAREADEIRA'),
+  ('TERRACEADOR'),
+  ('NIVELADORA'),
+  ('ARADORA 230'),
+  ('INTERMEDIÁRIA'),
+  ('INTERMEDIARIA'),
+  ('PESADA'),
+  ('SUPER PESADA'),
+  ('EXTRA PESADA'),
+  ('PLANTADEIRA')
+on conflict (nome) do nothing;
+
+do $$
+declare v_prod uuid; v_reg uuid;
+begin
+  -- idempotente: só popula produtos se a tabela estiver vazia
+  -- (evita duplicar os 248 se o deploy reaplicar a migration).
+  if (select count(*) from produtos) > 0 then return; end if;
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53643',null,'CALCAREADEIRA MASTER 7.500 PNEUS 11L15 E EST 40 MM PRECISA',(select id from marcas where nome='PICCIN'),null,null,null,'manual','A_OUTRAS_MARCAS|SEM_CUSTO_TABELA|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,38900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,40900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53710','1384947','GUINCHO BAG 2.000 BITOLA REGULÁVEL PN 11L15" (SAIU DE LINHA)',(select id from marcas where nome='ALMEIDA'),null,14100,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53924',null,'ROÇADEIRA 3 PONTO ROAL 1400 TRASM DIRETA',(select id from marcas where nome='ALMEIDA'),null,6750,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,10500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,11400);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,11800);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53758',null,'ROÇADEIRA 3 PONTO ROAL 1600 TRASM DIRETA',(select id from marcas where nome='ALMEIDA'),null,7500,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,10900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,11500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,11900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53836',null,'ROÇADEIRA 3 PONTO ROAL 1800 TRASM DIRETA',(select id from marcas where nome='ALMEIDA'),null,8175,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,11900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,12400);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,12900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53901',null,'ROÇADEIRA 3 PONTO ROCAL 1600 TRASM CORREIAS',(select id from marcas where nome='ALMEIDA'),null,9450,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,13500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,13900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53851',null,'ROÇADEIRA 3 PONTO ROCAL 1800 TRANSM CORREIAS',(select id from marcas where nome='ALMEIDA'),null,10012,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14300);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15600);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53858',null,'ROÇADEIRA ARRASTO ROACAL 1800 COM RODAS FERRO GRANDES',(select id from marcas where nome='ALMEIDA'),null,13050,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,18900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53950',null,'ROÇADEIRA ARRASTO ROACAL DUPLA 3400 RODAS FERRO GRANDES',(select id from marcas where nome='ALMEIDA'),null,21225,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,31900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54045','1397662','CALC TECLANCER 3.0 EST 500 2 PN 750X16"',(select id from marcas where nome='ALMEIDA'),null,16400,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53660','1384981','CALC TECLANCER 6.0 EST 500 4 PN 750X16"',(select id from marcas where nome='ALMEIDA'),null,22000,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,31900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,32900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53734','1384785','CALC PRO TECLANCER 3.0 EST LARGA 800 MM 2 PN 750X16"',(select id from marcas where nome='ALMEIDA'),null,17800,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53853','1387045','CALC PRO TECLANCER 6.0 EST LARGA 800 MM 4 PN 750X16"',(select id from marcas where nome='ALMEIDA'),null,23600,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,33500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,34900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,36500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53706','1384983','CALC PRO TECLANCER 8.0 EST LARGA 800 MM 4 PN 11L15" (LARGO)',(select id from marcas where nome='ALMEIDA'),null,26300,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,38500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,41500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54042',null,'CALC PRO TECLANCER 10.0 BIT FIXA CD EST 800 MM PN 12.4X24"',(select id from marcas where nome='ALMEIDA'),null,41900,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,59900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,62500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,64900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54057',null,'DIAMOND 8.0 "INOX" BIT REG CD PN 11L15" EST 800/500 2 JG DISC',(select id from marcas where nome='ALMEIDA'),null,41508,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,56900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,58900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,60900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53900',null,'DIAMOND 10.0 CHAPA BIT REG CD PN 24"EST 800/500 2 JG DISCOS',(select id from marcas where nome='ALMEIDA'),null,48896,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,66900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,69900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,72500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54043',null,'DIAMOND 10.0 "INOX" 10.0 BIT REG CD PN 24" EST 800/500 2 JG DISCOS',(select id from marcas where nome='ALMEIDA'),null,60896,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,82900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,86900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,89900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54058',null,'DIAMOND 12.0 CHAPA BIT REG CD PN 24" EST 800/500 2 JG DISCOS',(select id from marcas where nome='ALMEIDA'),null,61000,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,83900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,87900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,91900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54001',null,'DIAMOND 12.0 "INOX" BIT REG TX FIXA CD 4 PN 24" 2 JG DISCOS',(select id from marcas where nome='ALMEIDA'),null,81000,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,106900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,110900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,113900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53733',null,'BLACK 12.0 INOX BIT REG TX VARIA HIDR 4 PN 24" 2 JG - TELA + ANTENA',(select id from marcas where nome='ALMEIDA'),null,124000,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,164900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,169900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,173900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53846','1388929','CARRETA BASCMAX CARGOR 5.0 ROD DUPLO C/ 4 PN 750X16"',(select id from marcas where nome='ALMEIDA'),null,14900,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53906','1389904','CARRETA BASC MAX CARGOR 5.0 RODADO *TANDEM* C/ 4 PN 750X16"',(select id from marcas where nome='ALMEIDA'),null,17500,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53670','1384986','CARRETA BASC MAX CARGOR 6.0 RODADO DUPLO C/ 4 PN 750X16"',(select id from marcas where nome='ALMEIDA'),null,16900,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53837','1389908','CARRETA BASC MAX CARGOR 6.0 RODADO TANDEM C/ 4 PN 750X16"',(select id from marcas where nome='ALMEIDA'),null,18800,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54047','1397961','CARRETA BASC FORRAG 8.0 ROD TANDEM C/ 4 PN 11L15"',(select id from marcas where nome='ALMEIDA'),null,22500,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,32500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,33500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53844','1385946','CARRETA BASC FORRAG 10.0 ROD TANDEM C/ 4 PN 400/60"',(select id from marcas where nome='ALMEIDA'),null,27700,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,41500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54063',null,'CJ CARREGAD SPEED 1200 JÁ C/ CONCHA  + CHASSI  *SEM JOYSTICK *',(select id from marcas where nome='ALMEIDA'),null,15750,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54017',null,'CJ CARREGAD SPEED 1200 JÁ C/ CONCHA  + CHASSI  *COM JOYSTICK*',(select id from marcas where nome='ALMEIDA'),null,17925,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54133',null,'GUINCHO PEGA BAG PARA SPEED 1.200 TODOS TRATORES',(select id from marcas where nome='ALMEIDA'),null,2100,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,3200);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,3400);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,3600);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54114',null,'LAMINA DE 2.150 MM PARA SPEED 1.200',(select id from marcas where nome='ALMEIDA'),null,2100,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,3300);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,3500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,3700);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53841',null,'CJ PLAINA DIANT  PDAL 100 JÁ COM CHASSI + LAMINA 2,40 M S/ JOY',(select id from marcas where nome='ALMEIDA'),null,16477,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54088',null,'CJ PLAINA DIANT  PDAL 1.000 JÁ COM CHASSI + LAMINA 2,60 M S/ JOY',(select id from marcas where nome='ALMEIDA'),null,18732,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29300);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30700);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54197',null,'CJ PLAINA DIANT  PDAL 1.100 JÁ COM CHASSI + LAMINA 2,60 M S/ JOY',(select id from marcas where nome='ALMEIDA'),null,22875,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,31900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,32900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,34200);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54134',null,'CONCHA 1200 MM COM PISTÃO PARA PDAL 100',(select id from marcas where nome='ALMEIDA'),null,6450,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,9300);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,9700);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,10000);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54135',null,'CONCHA 1700 MM COM PISTÃO PARA PDAL 1.000/1.100',(select id from marcas where nome='ALMEIDA'),null,7200,null,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,10500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,10900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,11400);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53676','1384916','GRADE ARAD CONTR REM 14X26"X6,00 235 MM PN 750X16" 80 CV',(select id from marcas where nome='ALMEIDA'),null,17800,26390,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53677','1381942','GRADE ARAD CONTR REM 16X26"X6,00 235 MM PN 750X16" 90 CV',(select id from marcas where nome='ALMEIDA'),null,19200,28790,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53678','1381949','GRADE ARAD CONTR REM 18X26"X6,00 235 MM PN 750X16" 110 CV',(select id from marcas where nome='ALMEIDA'),null,20800,30659,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53617','1376719','GRADE INTER CONTR REM 14X28"X6,00 270 MM PN 750X16" 100 CV',(select id from marcas where nome='ALMEIDA'),null,18700,27569,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53679','1381951','GRADE INTER CONTR REM 16X28"X6,00 270 MM PN 750X16" 110 CV',(select id from marcas where nome='ALMEIDA'),null,20600,30767,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,31500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53680','1381953','GRADE INTER CONTR REM 18X28"X6,00 270 MM PN 750X16" 120 CV',(select id from marcas where nome='ALMEIDA'),null,21400,32245,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,31900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,32900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,33900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53681','1381956','GRADE INTER CONTR REM 20X28"X6,00 270 MM PN 750X16" 125 CV',(select id from marcas where nome='ALMEIDA'),null,23900,36322,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,33900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,35200);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,36900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53662','1376726','GRADE INTER CONTR REM 24X28"X6,00 270 MM PN 750X16" 160 CV',(select id from marcas where nome='ALMEIDA'),null,26700,40665,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,36900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,38500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53682','1381962','GRADE INTER CONTR REM 28X28"X6,00 270 MM PN 750X16" 180 CV',(select id from marcas where nome='ALMEIDA'),null,28900,42381,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,40900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,44200);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54071','1399682','GRADE NIV CONTR REM FIXA 28X20"X3,50 175 MM PN 750X16" 75 CV',(select id from marcas where nome='ALMEIDA'),null,17800,23240,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54072','1399685','GRADE NIV CONTR REM FIXA 32X20"X3,50 175 MM PN 750X16" 80 CV',(select id from marcas where nome='ALMEIDA'),null,18600,25250,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53674','1380241','GRADE NIV CONTR REM FIXA 36X20"X3,50 175 MM PN 750X16" 90 CV',(select id from marcas where nome='ALMEIDA'),null,19500,28657,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53675','1381938','GRADE NIV CONTR REM FIXA 42X20"X3,50 175 MM PN 750X16" 100 CV',(select id from marcas where nome='ALMEIDA'),null,22400,32943,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30900);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,31900);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,32900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53771','1384995','GRADE NIV CONT REM FIXA 32X22"X4,00 195 MM PN 750X16" 90 CV',(select id from marcas where nome='ALMEIDA'),null,20100,29586,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,31500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53618','1384998','GRADE NIV CONT REM FIXA 36X22"X4,00 195 MM PN 750X16" 100 CV',(select id from marcas where nome='ALMEIDA'),null,21800,33794,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,30500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,31500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,32500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53683','1381963','GRADE NIV CONT REM FIXA 44X22"X4,00 195 MM PN 750X16" 125 CV',(select id from marcas where nome='ALMEIDA'),null,25500,39647,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,35500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,36500);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,37500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53684','1381964','GRADE NIV CONT REM FIXA 48X22"X4,00 195 MM PN 750X16" 140 CV',(select id from marcas where nome='ALMEIDA'),null,28900,43730,'manual','A_OUTRAS_MARCAS|PRECO_MANUAL|BLOCO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='SP_MONTAGEM';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39500);
+  select id into v_reg from regioes where codigo='OUTROS_ES';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,41000);
+  select id into v_reg from regioes where codigo='MG_RJ_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52247',null,'GRADE CIVEMASA GVPF 22X36¨450 MM 4 RODAS 2017',null,(select id from categorias where nome='USADOS'),0,0,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,103990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,103990);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'CHURRUMEIRA MEPEL 15 TON COMPLETA 400/60 SEM USO (CLIENTE)',null,(select id from categorias where nome='USADOS'),0,0,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,79990);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52647',null,'GRADE TATU 16X34"X 360 MM - REFORMADA DISCOS NOVOS',null,(select id from categorias where nome='USADOS'),0,0,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,57990);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52402',null,'GRADE BALDAN PESADA 14X34" ANO 2019 4 PNEUS SEMINOVA',null,(select id from categorias where nome='USADOS'),0,0,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,44990);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52457',null,'GRADE TATU PESADA 18X32" X 360 MM PNEUS 400/60 2019 SEMINOVA',null,(select id from categorias where nome='USADOS'),0,0,'motor','B1_MS|SEM_CUSTO_TABELA') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,65990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='VENDA_DIRETA_MS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'TRATOR VALTRA A 124 ANO 2018 C/ 2400 HS (DE CLIENTE)',null,(select id from categorias where nome='TRATOR'),0,0,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,219900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53856','USADOS','26 - TERRACEADOR TATU 22X26" - TODOS DISCOS NOVOS',null,(select id from categorias where nome='USADOS'),0,null,'motor','B1_MS|SEM_CUSTO_TABELA') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53625','USADOS','22 - TERRACEADOR TATU 16X26" (MUITO CONSERVADO)',null,(select id from categorias where nome='USADOS'),0,null,'motor','B1_MS|SEM_CUSTO_TABELA') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54201','USADOS','34 - CALCARTEADEIRA TATU DCA 5.500',null,(select id from categorias where nome='USADOS'),0,null,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,18900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54200','USADOS','33 - GRADE PESADA TATU 14X32" COM PISTÃO (SEM REFORMA)',null,(select id from categorias where nome='USADOS'),0,null,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53859','USADOS','27 - GRADE INTERM BALDAN 18X28" ANO 2012 (ESTA RIO VERDE/MS)',null,(select id from categorias where nome='USADOS'),0,null,'motor','B1_MS|SEM_CUSTO_TABELA') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('USADOS','USADOS','32A - SÓ UMA DAS PLANTADEIRAS 15X50 AVULSA DO CJ ABAIXO',null,(select id from categorias where nome='USADOS'),0,null,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL|COD_DUPLICADO') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,185000);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('USADOS','USADOS','32 - CJ 2 PLANT TATU ULTRAFLEX 15X50 TITANIUM + TANDEM (CLIENTE)',null,(select id from categorias where nome='USADOS'),0,null,'motor','B1_MS|SEM_CUSTO_TABELA|COD_DUPLICADO') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,369000);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'FORRAGEIRA 1.2S S/ RODA E S/ CAMBÃO TELESCOPICO',null,(select id from categorias where nome='MENTA'),null,null,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'FORRAGEIRA 1.2S FORT COM RODA',null,(select id from categorias where nome='MENTA'),61200,null,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'FORRAGEIRA 1.2S PREMIUM',null,(select id from categorias where nome='MENTA'),106500,null,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54108',null,'VAGÃO MISTURADOR GIROMIX 6.O DUO C/ CHUPIM',null,(select id from categorias where nome='MENTA'),130000,null,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53918',null,'CIMAG PEC 600 COM BOMBA 3 PISTÕES E REABASTECEDOR',null,(select id from categorias where nome='PULV "CIMAG"'),8600,null,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,13990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,12700);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,11900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,12300);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,12700);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53919',null,'CIMAG PEC CROSS 2.000 COM 2 RODAS 24"',null,(select id from categorias where nome='PULV "CIMAG"'),29000,null,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,44990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42500);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,41000);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'CIMAG PEC CROSS 2.000 COM 4 RODAS TANDEM 14.4X24" (COMPRAR)',null,(select id from categorias where nome='PULV "CIMAG"'),34500,null,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,49990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,49900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,46900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,48900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,49900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53884',null,'CIMAG PEC 2.000 COM 4 RODAS TANDEM 16"',null,(select id from categorias where nome='PULV "CIMAG"'),28500,null,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,44490);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,41900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,38900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,40500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,41900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52017','119040025','PEK 600 TATU "PESADO" - 3 PONTO - 600 LITROS - BBA 75 L/MIN',null,(select id from categorias where nome='PULVERIZADOR'),null,null,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,13990);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53736','119040036','PEK 600 TATU "LEVE" - 3 PONTO - 600 LITROS - BBA 75 L/MIN',null,(select id from categorias where nome='PULVERIZADOR'),9353.15172,22187,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,13900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52445','119040012','FALKI 600 - PULV 3 PONTOS - 600 LITROS E BARRAS 12 METROS',null,(select id from categorias where nome='PULVERIZADOR'),14949.360719999999,35462,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22590);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21500);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54165','120270077','CRO 2.0 (PEQUENO) SEM SULCADOR SEM KIT PULVERIZAÇÃO',null,(select id from categorias where nome='COMPOSTADOR'),35629.829639999996,84519,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,55990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,54900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,52900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,54900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,56900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51341','120270075','CRO 2.0 (PEQUENO) COM SULCADOR SEM KIT PULVERIZAÇÃO',null,(select id from categorias where nome='COMPOSTADOR'),38919.26232,92322,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,60990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,58900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,55900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,57900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,59900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54166','120270074','CRO 2.0 (PEQUENO) COM SULCADOR E COM KITS PULVER (COMPLETO)',null,(select id from categorias where nome='COMPOSTADOR'),60820.568999999996,144275,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,95990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,89900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,85900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,88900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,91900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('38384','120270072','CRO 4.0 CIVEMASA COM SULCADOR E COM KITS PULVERIZ (COMPLETO)',null,(select id from categorias where nome='COMPOSTADOR'),108797.46948,258083,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,169990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,166900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,153900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,160900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,172300);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54085','120270042','CRO 4.0 CIVEMASA COM SULCADOR E SEM KITS PULVERIZAÇÃO',null,(select id from categorias where nome='COMPOSTADOR'),89310.85848,211858,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,130990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,128900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,118900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,128900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54064','120270046','CRO 4.0 CIVEMASA SEM SULCADOR E SEM KITS PULVERIZAÇÃO',null,(select id from categorias where nome='COMPOSTADOR'),84328.01928,200038,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,127990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,123900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,113900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,123900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50737','104010009','HID RC2 1500 TRANSMISSÃO "DIRETA" - 70 cv',null,(select id from categorias where nome='ROÇADEIRA'),11382.119999999999,27000,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,16500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49058','104100032','HID RC2 1700 TRANSMISSÃO "DIRETA" - 80 cv',null,(select id from categorias where nome='ROÇADEIRA'),11831.0814,28065,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,17500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,16900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15700);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,16300);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,16900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53911','104150007','HID 1300 KAPINA CLASSIC (MAIS LEVE) "DIRETA" - 60 CV',null,(select id from categorias where nome='ROÇADEIRA'),10162.546919999999,24107,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14800);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14400);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,13500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14000);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14400);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53694','104150010','HID 1500 KAPINA CLASSIC (MAIS LEVE) "DIRETA" - 70 CV',null,(select id from categorias where nome='ROÇADEIRA'),10636,25393,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15700);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15200);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14300);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14800);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15200);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53860','104150013','HID 1700 KAPINA CLASSIC (MAIS LEVE) "DIRETA" - 80 CV',null,(select id from categorias where nome='ROÇADEIRA'),11277,26296,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,16500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,14700);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15350);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51124','104010049','HID RO2  1500 TRANSMISSÃO "POR CORREIAS" - 70cv',null,(select id from categorias where nome='ROÇADEIRA'),13280,30984,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19590);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,18700);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,17300);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,17900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,18700);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35409','104100049','HID RO2 1700 TRANSMISSÃO  "POR CORREIAS" - 80 cv',null,(select id from categorias where nome='ROÇADEIRA'),13690,31929,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,17900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,18500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19200);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52223','104040045','HID RO2 2601 DUPLA C/ RODA GUIA 4 FACAS DESENTRADAS 90 cv',null,(select id from categorias where nome='ROÇADEIRA'),19340,45101,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28300);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27200);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25300);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26200);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26700);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37709','104040007','HID RO2 3101 DUPLA DESCENTRADA 4 FACAS - 100 cv',null,(select id from categorias where nome='ROÇADEIRA'),20660,48195,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29300);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29300);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52974','104090022','ARRASTO SIMPLES ROAT 1700 (PEQUENA) A CARDAN - 70 cv',null,(select id from categorias where nome='ROÇADEIRA'),18170,42389,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25800);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24800);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25800);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('40992','104090017','ARRASTO DUPLA ROAT 3400 ""SEM PNEUS"" - 90 cv',null,(select id from categorias where nome='ROÇADEIRA'),25410,59290,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,36990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,35900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,33900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,34500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,35500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52686','104090019','ARRASTO DUPLA ROAT 3400 TL COM  PNEUS DE TRANSPORTE',null,(select id from categorias where nome='ROÇADEIRA'),32470,75767,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,47500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,45900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,44200);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,45900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('38035','105010027','PERF DE SOLO  **SEM BROCAS**  ( ESCOLHER AS BROCAS E SOMAR )',null,(select id from categorias where nome='PERFURADOR'),4840,11279,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,6500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'BROCA DE 9" -   SOMAR AO PERFURADOR',null,(select id from categorias where nome='BROCA 9'),0,0,'motor','B1_MS|SEM_CUSTO_TABELA') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1150);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'BROCA DE 12" - SOMAR AO PERFURADOR',null,(select id from categorias where nome='BROCA 12'),0,0,'motor','B1_MS|SEM_CUSTO_TABELA') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1290);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values (null,null,'BROCA DE 18" - SOMAR AO PERFURADOR',null,(select id from categorias where nome='BROCA 18'),0,0,'motor','B1_MS|SEM_CUSTO_TABELA') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1490);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49061','407010053','TATU GATG 2000 BITOLA FIXA',null,(select id from categorias where nome='GUINCHO BAG'),20120,46924,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23700);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35678','407010050','CIVEMASA GCAG 2000  BITOLA REGUL',null,(select id from categorias where nome='GUINCHO BAG'),21350,49785,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35688','407010002','GAT 800 - GUINCHO 3 PONTO - 800 KG - SIMPLES',null,(select id from categorias where nome='GUINCHO-800'),1585,3759,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,2650);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50483','407010001','GAT 1000 GUINCHO 3 PONTO C/ PISTÃO HIDRÁULICO',null,(select id from categorias where nome='GUINCHO 3 PO'),5940,13850,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,5990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52231','402010001','PLATAFORMA TRAZEIRA 500 KG 3 PONTO - SEM TAMPAS',null,(select id from categorias where nome='PLATAFORMA'),1830,4250,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,3290);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37804','106060057','PLAINA TRAZEIRA 3 PONTO - PTL 2300 - 70 CV',null,(select id from categorias where nome='PLAININHA'),5220,11240,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.40000);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('38805','106060001','LTA 3000 (PEQUENA) MECÂNICA COM PNEUS 600X16"',null,(select id from categorias where nome='PATROLINHA'),20110,46895,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,29990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,28900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,27900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35687','106060006','LTA 5000 REVERSÃO MECANICA PNEUS 24" - 100 CV',null,(select id from categorias where nome='PATROLA'),29530,68861,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,40700);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,38900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,40900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('47267','106060040','LTA 5000 REVERSÃO HIDRÁULICA C/ VALVULA REVERSORA MANUAL',null,(select id from categorias where nome='PATROLA'),33320,77708,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,48990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,45700);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,43900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,44900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,45900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('106060048','106060048','LTA 5000 REVERSÃO HIDRÁULICA C/ VALVULA ELETRICA VEH',null,(select id from categorias where nome='PATROLA'),34540,80545,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,49990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52212','106060031','LTA 5000 REVERSÃO HIDRÁULICA - COMANDO TRIPLO - 3 VCR',null,(select id from categorias where nome='PATROLA'),32740,76364,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,47990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,46900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,43900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,45500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('106060044','106060044','LTA 5000 "S PESADA" PNEUS 26" - COMANDO TRIPLO - 120 CV',null,(select id from categorias where nome='PATROLA'),55120,128552,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('40756','106060049','LTA 5.000 “S” PESADA PNEUS 26” COM VALVULA VEH - 120 CV',null,(select id from categorias where nome='PATROLA'),56920,132750,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52103','107030006','PAT-H 320 CONCHA TRAZEIRA 3 PONTO C/ PISTÃO',null,(select id from categorias where nome='CONCHINHA'),null,null,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,6990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51383','107020258','CONCHA PAH AVULSA 1200 MM C/ VÁLV PD PLAINA DIANT (*NA TRC*)',null,(select id from categorias where nome='CONCHA PD'),6490,15135,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,10500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,9900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,8900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,9300);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,9700);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52209','511046453','CONCHA PAC AVULSA 1700 MM P/ CONJ PCA  C/ ENGATE PINO ANTIGO',null,(select id from categorias where nome='CONCHA PCA'),4170,9718,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,8200);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53823','531044018','CONCHA PAC AVULSA 1700 MM P/ CONJ PCA  C/ ENGATE RÁPIDO',null,(select id from categorias where nome='CONCHA PCA'),3340,7788,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,7900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52676','501048045','CONCHA PAC AVULSA 1900 MM P/ CONJ PCA  C/ ENGATE PINO ANTIGO',null,(select id from categorias where nome='CONCHA PCA'),5290,12315,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,8900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53248','521045475','SUPORTE PARA BAG DO CONJ  PCA C/ "ENGATE RÁPIDO + NOVO"',null,(select id from categorias where nome='SAB BAG'),4155,9689,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,6990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54061','531042232','SUPORTE PARA BAG DO CONJ  PCA C/ "ENGATE PINO  + ANTIGO"',null,(select id from categorias where nome='SAB BAG'),4229,9860,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,7190);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52918','102590004','ROLO FACA CICLUS 3000  COM 1 ROLO DE FACAS',null,(select id from categorias where nome='ROLO FACA'),42520,99168,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('102590001','102590001','ROLO FACA CICLUS 7000 COM 3 ROLOS DE FACAS',null,(select id from categorias where nome='ROLO FACA'),136520,318432,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52309','102590002','ROLO FACA CICLUS 9000  COM 3 ROLOS DE FACAS',null,(select id from categorias where nome='ROLO FACA'),153500,358018,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,221900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,199900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,209900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35445','113010018','RASPADOR "SCRAPER" 3.0 C/ PNEUS NOVOS - 110 CV',null,(select id from categorias where nome='SCRAPER'),32900,76719,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35990','120370221','SUBSOL 9 H STAC-L 450 COMPL - 180 cv',null,(select id from categorias where nome='SUBSOLADOR'),58460,136354,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52006','101100091','AIVECAS FIXO AAH 4 HASTES C/ RODA GUIA - 105- 120 CV',null,(select id from categorias where nome='ARADO AIVECA'),12260,28592,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('42099','120630003','ARADO AIVECAS AACRM 5 HASTES REVERS 180 CV',null,(select id from categorias where nome='ARADO AIVECA'),null,null,'motor','B1_MS|SEM_CUSTO_TABELA') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,47990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51018','115010032','TCA 10.500  MULTIUSO COM 2 PNEUS 30"                     *LIQUIDAÇÃO FN*',null,(select id from categorias where nome='GRANELEIRA'),79383.0555,176211,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.40000);
+  select id into v_reg from regioes where codigo='SP_SP';
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.35000);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('41985','109090145','DCA 1200-LA LONGO ALCANÇE  - 3 PONTO AC CABO',null,(select id from categorias where nome='ADUBADEIRA'),null,null,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,15990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53628','109120039','ATRIUM 1.250 DUPLO LONGO ALCANÇE C/ ACIONAM HIDRÁULICO',null,(select id from categorias where nome='ADUBADEIRA'),null,null,'manual','B1_MS|SEM_CUSTO_TABELA|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,18990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52387','109120045','ATRIUM 1.500 DUPLO LONGO ALCANÇE C/ ACIONAM HIDRÁULICO',null,(select id from categorias where nome='ADUBADEIRA'),15698,36608,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22300);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20700);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21300);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22300);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51942','109090053','DCA2 2.500 CARDAN 1 EIXO PNEUS 750X16" EST 500',null,(select id from categorias where nome='CALCAREADEIRA'),23860,55647,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35656','109090023','DCA2  5.500 CARDAN PNEUS 11L15 EST 500 - 80 CV',null,(select id from categorias where nome='CALCAREADEIRA'),30103,71409,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,41900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35773','109090019','DCA2 7.500 CARDAN PNEUS  11L15 EST 500 - 80 CV',null,(select id from categorias where nome='CALCAREADEIRA'),33090,77172,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,45300);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50697','109090047','DCCO (LARGA) 7.500 CARDAN PNEUS 11L15 EST 800 - 90 CV',null,(select id from categorias where nome='CALCAREADEIRA'),36110,84222,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52219','109090412','DCA  6.000 "INOX" HIDRÁULICA EST 500 PN 11L15 80 CV',null,(select id from categorias where nome='CALCAREADEIRA'),34590,80656,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,50990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,49900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,45900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,46900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,47900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51092','109090445','DCA  8.000 "INOX" ACION CARDAN EST 500 PN 11L15 - 90 CV',null,(select id from categorias where nome='CALCAREADEIRA'),38560,89924,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,56990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,53700);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,50900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,51900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,53900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51096','109090458','DCA  8.000 "INOX" HIDRÁULICA EST 500 PN 11L15 - 90 CV',null,(select id from categorias where nome='CALCAREADEIRA'),41190,96067,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,60590);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,58900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,54900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,55900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,57900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53667','109090478','DCCO (LARGA) 8.000 "INOX" CARDAN EST 800 PN 11L15 - 90 CV',null,(select id from categorias where nome='CALCAREADEIRA'),42103,98181,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,62990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,59900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,55900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,56900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,59500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51122','109090367','DCCO (LARGA) 8.000 "INOX" HIDRÁULICA EST 800 PN 11L15 - 90 CV',null,(select id from categorias where nome='CALCAREADEIRA'),44670,104185,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50694','109090215','DCA2 10.500 HIDRÁULICA PNEUS 24" EST 500 - 110 CV',null,(select id from categorias where nome='CALCAREADEIRA'),57890,134779,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50738','109090049','DCA2 10.500 CARDAN PNEUS 24" EST 500 - 110 CV',null,(select id from categorias where nome='CALCAREADEIRA'),54830,127869,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('42028','109090331','DCCO (LARGA) 10.500 HIDRÁUL PNEUS 24” EST 800 PN 400/60 - 110 CV',null,(select id from categorias where nome='CALCAREADEIRA'),58830,137195,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51097','109090457','DCA 11.000 "INOX" CARDAN EST 500 - 110 CV',null,(select id from categorias where nome='CALCAREADEIRA'),58940,137469,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,81000);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51093','109090490','DCA 11.000 "INOX" HIDRÁULICA EST 500 - 110 CV',null,(select id from categorias where nome='CALCAREADEIRA'),62070,144743,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51113','109090498','DCCO (LARGA) 11.000 "INOX" HIDRÁULICA  EST 800 - 110 CV',null,(select id from categorias where nome='CALCAREADEIRA'),65200,152054,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53144','109090682','DCA 11.000 "INOX" ACIO HIDR EST TRAV ""BITOLA REGULÁVEL 3,30 M""',null,(select id from categorias where nome='CALCAREADEIRA'),77840,181551,'motor','B1_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51130','109090694','DCA 12T "TATU" ISOBUS SEM TELA - BIT 3,30 M   (TELA CONSULTAR)',null,(select id from categorias where nome='CALCAREADEIRA'),189650,442351,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,274900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,269900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,248900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,254900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,261900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49741','121740061','DCA 15T "CIVEMASA" ISOBUS SEM TELA - BIT 3,30  (TELA CONSULTAR)',null,(select id from categorias where nome='CALCAREADEIRA'),203480,474594,'motor','B1_MS|') returning id into v_prod;
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51316','109090520','DCA 15 T TATU "TAXA VARIÁVEL  COMP COM TELA       *LQ REFATURAM*',null,(select id from categorias where nome='CALCAREADEIRA'),239170,514240,'manual','B1_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,329750);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,311900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35770','120810009','TCL 16X26 – 110 CV',null,(select id from categorias where nome='TERRACEADOR'),39032,91018,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35771','120810010','TCL 18X26 – 125 CV',null,(select id from categorias where nome='TERRACEADOR'),41806,97490,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37229','120810012','TCL 20X26 - 140 CV',null,(select id from categorias where nome='TERRACEADOR'),45494,106087,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37707','120810007','TCL 22X26 - 150 CV',null,(select id from categorias where nome='TERRACEADOR'),46737,108989,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37759','120810013','TCL 24X26 - 160 cv',null,(select id from categorias where nome='TERRACEADOR'),48283,112592,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37978','120140058','TC 30 E 30X26 - 190 CV  (TERRAÇO EMBUTIDO)',null,(select id from categorias where nome='TERRACEADOR'),131725,307173,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,192990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,188900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,173900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,178900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,183900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50480','120140062','TC2 30X28 - 210 CV',null,(select id from categorias where nome='TERRACEADOR'),132262,308425,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,193990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,189900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,174900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,179900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,184900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('36113','120140063','TC2 34X28 – 230 CV',null,(select id from categorias where nome='TERRACEADOR'),135548,316087,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,197990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,193900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,178900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,183900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,189900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('41299','120140059','TC2 40X28X6,00 MM  – 320 CV - ABERTURA HIDRAULICA',null,(select id from categorias where nome='TERRACEADOR'),162993,380089,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,238990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,233900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,214900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,219900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,227900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44687','120140064','TC2 48X28X6,00 MM  – 370 CV - ABERTURA HIDRÁULICA',null,(select id from categorias where nome='TERRACEADOR'),185183,431832,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,269990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,263900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,243900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,249900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,256900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52007','102130549','GNL 28X20 - 170 MM "DM" SEM PNEUS – 70 CV',null,(select id from categorias where nome='NIVELADORA'),12580,29319,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,18990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,18300);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,16900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,17500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,17900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51679','102130558','GNL 32X20 - 170 MM "DM" SEM PNEUS',null,(select id from categorias where nome='NIVELADORA'),14570,33697,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51123','102130560','GNL 32X22 - 170 MM "DM" SEM PNEUS  - 75 CV',null,(select id from categorias where nome='NIVELADORA'),15040,35071,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21500);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,19900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49658','102130563','GNL 36X20 - 170 MM "GRAXA" SEM PNEUS S/ PISTÃO – 80 CV',null,(select id from categorias where nome='NIVELADORA'),15461.16,34320,'motor','B2_MS||COD_DUPLICADO') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49658','102130564','GNL 36X20 - 170 MM "DM" SEM PNEUS – 80 CV',null,(select id from categorias where nome='NIVELADORA'),15440,36006,'manual','B2_MS|PRECO_MANUAL|COD_DUPLICADO') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,20900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53511','102130573','GNL 36X20 - 170 MM "DM" SEM PNEUS  **COM PISTÃO ABERT**',null,(select id from categorias where nome='NIVELADORA'),17640,41126,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53515','102130567','GNL 36X22 - 170 MM "DM" SEM PNEUS - 80 CV',null,(select id from categorias where nome='NIVELADORA'),16050,37424,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23590);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,21900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('102130635','102130635','GNL 36X22  - 170 MM "DM" SEM PNEUS - 80 CV **COM PISTÃO ABERT**',null,(select id from categorias where nome='NIVELADORA'),18080,42170,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,26990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51649','102490003','GNCR-S 36X22 - CONTROLE REMOTO FIXA  - MT DMO 175 MM - 90 CV',null,(select id from categorias where nome='NIVELADORA'),31490,73428,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53577','102490004','GNCR-S 40X22 - CONTROLE REMOTO FIXA - MT DMO 175 MM - 110 CV',null,(select id from categorias where nome='NIVELADORA'),35240,82193,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35454','102130569','GNL 42X20 - 170 MM  "DM" DISCOS MISTOS  – 90 CV',null,(select id from categorias where nome='NIVELADORA'),17510,40833,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,25500);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,22900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,23500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,24500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35899','102490005','GNCR-S 44X22 - CONTROLE REMOTO FIXA - MT DMO 175 MM - 125 CV',null,(select id from categorias where nome='NIVELADORA'),36410,84903,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('38450','102120237','GNM 44X22 - INTEIRIÇA DM 195 MM C/ PNEUS C/ PISTÃO - 110 CV',null,(select id from categorias where nome='NIVELADORA'),34040,79379,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('54087','102110281','GN 44X22"X4,50 MM DR DM C/ PISTÃO ABERTURA - S/ PN - 195 MM',null,(select id from categorias where nome='NIVELADORA'),26320,62434,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39590);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,37900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,34900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,36500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,37500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53862','102110440','GN 44X20 - ESPAÇ 195 MM MT DM S/ PISTÃO S/ PNEUS',null,(select id from categorias where nome='NIVELADORA'),24625,57425,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53861','102110238','GN 48X20 - ESPAÇ 195 MM DR DM S/ PISTÃO S/ PNEUS',null,(select id from categorias where nome='NIVELADORA'),25505,59481,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('38451','102120193','GNM 48X22X3,50MT DM  - INTEIRIÇA 195 C/ PNEUS C/ PISTÃO – 125 CV',null,(select id from categorias where nome='NIVELADORA'),33463,80571,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,48990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,47900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,43900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,44900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,46500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53582','102330246','GNFM 48X22 - 195 MM PANT DM C/ PISTÃO E PNEUS',null,(select id from categorias where nome='NIVELADORA'),39673,92516,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('36440','120660091','GDFM 52X22 - 195 MM DM PANT C/ PNEUS C/ PISTÃO - 140 CV',null,(select id from categorias where nome='NIVELADORA'),43260,100879,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53326','102120199','GNM 52X22X3,50 MT DM - INTEIRIÇA 195 C/ PNEUS C/ PISTÃO – 130 CV',null,(select id from categorias where nome='NIVELADORA'),34676,82257,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,50990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,49500);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,46900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,46900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,48500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35798','102490007','GNCR-S 52X22 - CONTROLE REMOTO FIXA - MT DMO 175 MM - 150 CV',null,(select id from categorias where nome='NIVELADORA'),40010,93393,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37784','120660070','GDFM 56X22 - 195 MM DM MT PANT C/ PNEUS C/ PISTÃO - 150 CV',null,(select id from categorias where nome='NIVELADORA'),43810,102177,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('102490008','102490008','GNCR-S 56X22 - CONTROLE REMOTO FIXA - MT DMO 175 MM - 180 CV',null,(select id from categorias where nome='NIVELADORA'),46519,108477,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,67990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,65900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37169','120450029','GDCDH 56X22 - CONT REM "ARTICULADA" DMO - 180 CV',null,(select id from categorias where nome='NIVELADORA'),54380,126825,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('38361','120660077','GDFM 60X22 - 195 MM DM DR PANT C/ PNEUS C/PISTÃO - 160 CV',null,(select id from categorias where nome='NIVELADORA'),45392,105858,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('47972','1218000133','GDFH 64X22 - 195 MM DM DR PANT C/ PNEUS  C/ PISTÃO - 170 CV',null,(select id from categorias where nome='NIVELADORA'),63790,148780,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53330','120900164','GDMC 68X24 - INTEIRIÇA C/ PNEUS PISTÃO',null,(select id from categorias where nome='NIVELADORA'),60630,142035,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50083','121800080','GDFH 72X22 - 195 MM DMO MT PANT C/ PNEU HID C/ PA 180 CV',null,(select id from categorias where nome='NIVELADORA'),65920,153741,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,90800);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51521','121800078','GDFH 72X24 - 195 MM DMO TODOS DISCOS RECORT PA 190 CV',null,(select id from categorias where nome='NIVELADORA'),67830,158191,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('45759','121800106','GDFH 84X22 - 195 MM DMO PANT MT C/ PNEU HID C/ PA 220 CV',null,(select id from categorias where nome='NIVELADORA'),75110,175183,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51614','121800105','GDFH 84X24 - 195 MM DMO PANT MT C/ PNEU HID C/ PA - 230 CV',null,(select id from categorias where nome='NIVELADORA'),77710,181250,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,107100);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53228','121800159','GDFH 108X24 - 195 MM DMO PANT C/ PNEUS HID C/ PA - 280 A 320',null,(select id from categorias where nome='NIVELADORA'),106360,248075,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('42759','120090089','SNC-P 108X22 -  CONTR REMOTO ARTICULADA - 300 CV',null,(select id from categorias where nome='NIVELADORA'),161430,376488,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('40871','102440190','ATCRL 14X26”X6,00 - 230 MM DM 1.1/2" PN 600X16” – 85 CV',null,(select id from categorias where nome='ARADORA 230'),24070,56135,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,1.03308);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,33900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53735','102440495','ATCRL 14X26”X6,00 - 230 MM CM (A GRAXA) 1.1/2" PN 600X16” 85 CV',null,(select id from categorias where nome='ARADORA 230'),23720,55319,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53442','102440672','ATCRL 16X26"X6,00 - 230 MM DMO 1.1/2'' PN 600X16" - 90 CV',null,(select id from categorias where nome='ARADORA 230'),26590,62003,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53336','102440673','ATCRL 18X26"X6,00 - 230 MM DMO 1.1/2" PN 750X16 - 105 CV',null,(select id from categorias where nome='ARADORA 230'),28990,67612,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35809','102260116','GAICR PESADA 14X28”X6,00 - 270 MM PNEUS 600X16” – 95 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),26990,62946,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53438','102260869','GAICRL 14X28"X6,00 - 270 MM PNEUS 600X16 - 90 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),25436,60337,'manual','B2_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,37990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,36300);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,33400);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,34200);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,36800);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35411','102260500','GAICRL 16X28”X6,00 - 270 MM PNEUS 600X16 – 100-110 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),29259,69406,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,43590);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,41900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,38500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,39500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,42400);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35412','102260502','GAICRL 18X28”X6,00 - 270 MM PNEUS 750X16” – 110-120 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),32020,75956,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35446','102260518','GAICRL 20X28"X6,00 - 270 MM PNEUS 750X16" 120-130 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),33290,77641,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,48940);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('39897','102260545','GAICRL 22X28"X6,00 - 270 MM PNEUS 750X16" 140-150 CV',null,(select id from categorias where nome='INTERMEDIARIA'),34490,80431,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35853','102260689','GAICRL 24X28”X6,00 - 270 MM PNEUS 750x16" – 150-160 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),35630,83094,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,49900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35435','102260121','GAICR 28X28”X6,00 - 270 MM DM PN 750 x 16" – 180 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),40683,96506,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('41872','102262406','GAICR 30X28"X6,00 - 270 MM PNEUS 750X16" - 200 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),45100,105183,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51369','102460309','GAICR 300 - 30X30"X7,50 - 300 MM 4 PNEUS - 220 CV',null,(select id from categorias where nome='INTERMEDIARIA'),60140,140274,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('37758','121140176','SIC 32X28"X 6,00 - 270 MM DM - PNEUS 400/60 230 CV',null,(select id from categorias where nome='INTERMEDIÁRIA'),68902,156441,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('36481','121140167','SIC 36X28"X 7,50 - 270 MM - 1.5/8 DMO PNEUS 400/60 - 250 CV',null,(select id from categorias where nome='INTERMEDIARIA'),74230,173122,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('121140119','121140119','SIC 40X28"X 7,50 MM - 1.5/8" DM PN 400/60',null,(select id from categorias where nome='INTERMEDIARIA'),79588,179819,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('41886','120070096','SAC 48X30"X 7,50 MM - 270 MM C/ PNEUS 400/60 - 300 CV',null,(select id from categorias where nome='INTERMEDIARIA'),103690,241818,'motor','B2_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50744','102060433','GAPCR 12X32” 340 MM DMO CONT REM 11L15 - 125 CV - TATU',null,(select id from categorias where nome='PESADA'),47292,110281,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35768','102060444','GAPCR 14X32" 340 MM DMO CONT REM 11L15 - 150 CV - TATU',null,(select id from categorias where nome='PESADA'),50417,117567,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,72990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,70900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,65900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,66900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,68900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51202','102060443','GAPCR 14X34" 340 MM DMO CONT REM 11L15 - 160 CV - TATU',null,(select id from categorias where nome='PESADA'),51650,120453,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('35772','102060458','GAPCR 16X32” 340 MM DMO CONT REM 11L15 - 180 CV - TATU',null,(select id from categorias where nome='PESADA'),55288,128928,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,79990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,77900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,71900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,73900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,75900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50775','102060452','GAPCR 16X34" 340 MM DMO CONT REM 11L15 - 190 CV - TATU',null,(select id from categorias where nome='PESADA'),56586,131955,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,81990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,79900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,73900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,74900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,77500);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50288','120150033','SGAC 16X34” 360 MM DM CONT REM PN 11L15 - 200 CV - CIVEMASA',null,(select id from categorias where nome='PESADA'),61270,142893,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,88590);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,86900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,79900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,81900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,83900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('52479','102060469','GAPCR 18X34" 340 MM DMO CONT REM  ROD DUPLO - 200 - TATU',null,(select id from categorias where nome='PESADA'),63532,148151,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,91900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,89900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,81900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,84900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,87900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('36103','120150041','SGAC 18X34” 360 MM DM 11L15 – 220 CV - CIVEMASA',null,(select id from categorias where nome='PESADA'),64560,150055,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,87990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,90900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,83900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,85900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,88900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49067','102060616','GAPCR 18X34” 360 MM DMO  11L15 – 220 CV - TATU',null,(select id from categorias where nome='PESADA'),67220,156768,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,87990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,94900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,87500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,89500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,92900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53417','102050233','GAPM 20X32" 340 MM DMO ARRASTO C/ PISTÃO - 190 CV',null,(select id from categorias where nome='PESADA'),50790,118454,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,69990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49633','102060412','GAPCR 20X34” 340 MM DMO - ROD DUPLA – 230  CV  - TATU',null,(select id from categorias where nome='PESADA'),79453,185277,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,114990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,111900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,102900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,104900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,107900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('39947','120040052','GVMF 20X34” 360 MM CH TRIPLO DM PN 400/60 - 250 CV - CIVEMASA',null,(select id from categorias where nome='PESADA'),90225,210396,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('39961','120040051','GVMF 22X34" 360 MM CH TRIPLO DM PN 400/60 - 270 CV   (MATÃO)',null,(select id from categorias where nome='PESADA'),92600,215955,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49101','102060400','GAPCR 24X34”X9,00 MM 340 MM DMO - ROD DUPLO - 260 CV - TATU',null,(select id from categorias where nome='PESADA'),84180,196301,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53321','102060464','GAPCR 28X34"X9,00 MM 340 MM DMO - ROD DUPLO - 290 CV - TATU',null,(select id from categorias where nome='PESADA'),91494,213356,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53580','102060611','GAPCR 28X34"X9,00 MM 340 MM DMO - PN 400/60 - 290 CV - TATU',null,(select id from categorias where nome='PESADA'),105850,246862,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,139900);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,149900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('40224','120040050','GVMF 28X34”X9,00 MM  360 MM DM CH TRIPLO - 400/60  – CIVEMASA',null,(select id from categorias where nome='PESADA'),105860,246909,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44714','102090590','GASPCR TATU 12X36"X12,00 440 MM DMO PN 900X20 - 200 CV',null,(select id from categorias where nome='SUPER PESADA'),75385,175791,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,108990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,106900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,98500);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,100900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,103900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44680','102090594','GASPCR TATU 14X36”X12,00 440 MM DMO PN 900X20 - 225 CV',null,(select id from categorias where nome='SUPER PESADA'),79760,185996,'motor','B3_MS||COD_DUPLICADO') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,114990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,112900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,103900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,105900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,109900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('43632','102090581','GASPCR TATU 16X36”X12,00 440 MM DMO PN 900X20 - 250 CV',null,(select id from categorias where nome='SUPER PESADA'),91083,212401,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,131990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,128900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,118900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,121900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,124900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44677','102090554','GASPCR TATU 18X36"X12,00 440 MM DMO PN 900X20 - 270 CV',null,(select id from categorias where nome='SUPER PESADA'),94832,221141,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,136990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,133900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,123900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,126500);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,129900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49068','102090560','GASPCR TATU 20X36"X12,00 440 MM DMO PN 900X20 - 290 CV',null,(select id from categorias where nome='SUPER PESADA'),98730,230232,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,142990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,139900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,128900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,131900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,135900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('39012','102090575','GASPCR TATU 22X36"X12,00 440 MM DMO PN 900X20 - 320 CV',null,(select id from categorias where nome='SUPER PESADA'),102449,238902,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,147990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,140500);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,133900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,136900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,140900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('42753','120020136','GVPF 22X36"X12,00 MM DMO 450 MM 4 PN 750X16 - 320',null,(select id from categorias where nome='SUPER PESADA'),118420,276199,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('53003','120020253','GVPF 22X38"X12,00 MM DMO 450 MM PN 400/60 - 330 CV',null,(select id from categorias where nome='SUPER PESADA'),119292,278179,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50942','120020227','GVPF 24X36"X12 MM 450 DMO MM PN 900X20" - 370 CV',null,(select id from categorias where nome='SUPER PESADA'),137130,319832,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('50943','120020232','GVPF 26X36"X12 MM 450 DMO MM PN 900X20" 400 CV',null,(select id from categorias where nome='SUPER PESADA'),139400,325121,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51216','120020237','GVPF 26X38"X12 MM 450 DMO MM PN ALTA FLUT 400',null,(select id from categorias where nome='SUPER PESADA'),149360,348345,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('51354','121510219','CIVEMASA GASPCRC EHD 12X42”X12,00 DMO 2.3/4" 507 MM - 290 CV',null,(select id from categorias where nome='EXTRA PESADA'),115850,270149,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,167990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,164900);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,151900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,155900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,159900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44595','102090383','TATU  GASPCR EHD 14X42"X12,00 DMO 2.3/4"',null,(select id from categorias where nome='EXTRA PESADA'),116650,271995,'manual','B3_MS|PRECO_MANUAL|COD_DUPLICADO') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,168990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,158000);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,150900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,154900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,158900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44595','121510223','CIVEMASA GASPCRC EHD 14X42"X12,00 DMO 2.3/4',null,(select id from categorias where nome='EXTRA PESADA'),116650,271995,'manual','B3_MS|PRECO_MANUAL|COD_DUPLICADO') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,169990);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,159000);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,151900);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,155900);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,159900);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44576','121510249','CIVEMASA GASPCRC EHD 16X42”X12,00 DMO 2.3/4"',null,(select id from categorias where nome='EXTRA PESADA'),155350,362302,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44371','121510263','CIVEMASA GASPCRC EHD 18X42"X12,00 DMO 2.3/4" 507 MM - 450 CV',null,(select id from categorias where nome='EXTRA PESADA'),160170,373568,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('44680','121510260','CIVEMASA GASPCRC EHD 20X42"X12,00 DMO 2.3/4" 507 MM - 500 CV',null,(select id from categorias where nome='EXTRA PESADA'),163900,382254,'motor','B3_MS||COD_DUPLICADO') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49595','121510255','CIVEMASA GASPCRC EHD 22X42”X12,00 DMO 2.3/4" 507 MM - 500 CV',null,(select id from categorias where nome='EXTRA PESADA'),175600,409542,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.31000);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49601','111260594','PST TRIO FLEX 17X45 TITANIUM (DA PARA FAZER 15X50) 11/2025',null,(select id from categorias where nome='PLANTADEIRA'),929827,398615,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='VENDA_DIRETA_MS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,449000);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_OUTROS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  select id into v_reg from regioes where codigo='SP_RJ_MG_SUL';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,0);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49045','111181026','ULTRAFLEX 15X500 DC20+CSU+MH+CI+SPCRR+SIG           *LIQUIDAÇÃO*',null,(select id from categorias where nome='PLANTADEIRA'),0,668776,'manual','B3_MS|PRECO_MANUAL') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_DDOS';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,349990);
+  select id into v_reg from regioes where codigo='SP_SP';
+  insert into produto_preco_manual (produto_id,regiao_id,preco) values (v_prod,v_reg,1);
+  insert into produtos (codigo,codigo_fabrica,descricao,marca_id,categoria_id,custo_atual,tabela_bruta,tipo_preco,origem_import)
+    values ('49640','111260569','PST TRIO 15X500 TITANIUM COMPLETA S/ PM 400     *DEMONSTRAÇÃO*',null,(select id from categorias where nome='PLANTADEIRA'),384000,844256,'motor','B3_MS|') returning id into v_prod;
+  select id into v_reg from regioes where codigo='MS_ANDREI';
+  insert into produto_indice_regiao (produto_id,regiao_id,indice) values (v_prod,v_reg,0.30000);
+end $$;

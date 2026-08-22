@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.env.local
+*.log
+# planilha original (dados sensíveis + arquivo grande); os dados já estão no seed
+*.xlsx
+decrypted.xlsx
+scratchpad
