@@ -3373,3 +3373,142 @@ begin
   ) t;
   return v;
 end $$;
+
+
+-- >>>>>>>>>> 0010_auth_signup.sql <<<<<<<<<<
+
+-- =====================================================================
+-- 0010_auth_signup.sql — Auto-cadastro de vendedores.
+-- Fluxo: pessoa se cadastra (signUp) -> confirma email -> entra como
+-- PENDENTE (ativo=false) -> admin libera (ativo=true) e define a região.
+-- Enquanto pendente/bloqueado, não vê nada (gate no app + RLS).
+-- =====================================================================
+
+-- Novo cadastro entra PENDENTE (ativo=false). Segurança: o site é público,
+-- então o admin precisa liberar antes de a pessoa ver preços.
+create or replace function fn_novo_usuario()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into profiles (id, nome, papel, ativo)
+  values (new.id, split_part(coalesce(new.email,'usuario'), '@', 1), 'vendedor', false)
+  on conflict (id) do nothing;
+  return new;
+end $$;
+
+-- helper: o usuário logado é um perfil ATIVO?
+create or replace function fn_ativo()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from profiles p where p.id = auth.uid() and p.ativo);
+$$;
+
+-- Endurecer leitura: só usuários ATIVOS enxergam catálogo/regras/estoque.
+-- (profiles_select continua liberado pro próprio usuário saber que está
+--  pendente/bloqueado.)
+do $$
+declare t text;
+begin
+  foreach t in array array[
+    'regioes','filiais','marcas','categorias','produtos','componentes_preco',
+    'config_precificacao','produto_indice_regiao','produto_preco_manual','inventory_balances'
+  ] loop
+    execute format('drop policy if exists %1$s_read on %1$s;', t);
+    execute format('create policy %1$s_read on %1$s for select to authenticated using (fn_ativo());', t);
+  end loop;
+end $$;
+
+-- fn_usuarios com email e status de confirmação (para o admin gerenciar)
+create or replace function fn_usuarios()
+returns jsonb language plpgsql stable security definer set search_path = public as $$
+declare v jsonb;
+begin
+  if not is_admin() then raise exception 'apenas admin'; end if;
+  select coalesce(jsonb_agg(x order by x->>'ativo', x->>'nome'), '[]'::jsonb) into v from (
+    select jsonb_build_object(
+      'id', p.id, 'nome', p.nome, 'papel', p.papel, 'ativo', p.ativo,
+      'regiao_padrao_id', p.regiao_padrao_id, 'regiao_nome', r.nome,
+      'email', u.email,
+      'confirmado', (u.email_confirmed_at is not null),
+      'vendas', (select count(*) from sales s where s.vendedor_id = p.id),
+      'ultima_venda', (select max(s.created_at) from sales s where s.vendedor_id = p.id)
+    ) x
+    from profiles p
+    left join regioes r on r.id = p.regiao_padrao_id
+    left join auth.users u on u.id = p.id
+  ) t;
+  return v;
+end $$;
+
+
+-- >>>>>>>>>> 0011_regiao_estoque.sql <<<<<<<<<<
+
+-- =====================================================================
+-- 0011_regiao_estoque.sql — Região = estoque. Cada região tem seu próprio
+-- estoque. No banco isso é representado por uma FILIAL 1:1 com a região
+-- (mantém o motor de estoque/transferências), mas na tela o usuário só
+-- vê "região". Também: RPC de catálogo multi-região (preço + estoque).
+-- =====================================================================
+
+-- garante uma filial (estoque) para cada região existente
+insert into filiais (codigo, nome, regiao_id)
+select r.codigo, r.nome, r.id
+from regioes r
+where not exists (select 1 from filiais f where f.regiao_id = r.id)
+on conflict (codigo) do update set regiao_id = excluded.regiao_id;
+
+-- e para toda região nova criada daqui pra frente
+create or replace function fn_regiao_cria_filial()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into filiais (codigo, nome, regiao_id)
+  values (new.codigo, new.nome, new.id)
+  on conflict (codigo) do update set regiao_id = excluded.regiao_id, nome = excluded.nome;
+  return new;
+end $$;
+drop trigger if exists trg_regiao_cria_filial on regioes;
+create trigger trg_regiao_cria_filial after insert on regioes
+  for each row execute function fn_regiao_cria_filial();
+
+-- helper: filial (estoque) de uma região
+create or replace function fn_filial_da_regiao(p_regiao uuid)
+returns uuid language sql stable as $$
+  select id from filiais where regiao_id = p_regiao order by created_at limit 1;
+$$;
+
+-- =====================================================================
+-- Catálogo multi-região: para cada produto ativo e cada região pedida,
+-- devolve preço final e estoque da região. Formato "longo" (uma linha por
+-- produto+região) — o front monta as colunas.
+-- =====================================================================
+create or replace function fn_catalogo_multi(p_regioes uuid[])
+returns table (
+  produto_id     uuid,
+  descricao      text,
+  marca          text,
+  categoria      text,
+  codigo         text,
+  codigo_fabrica text,
+  status         status_produto,
+  tipo_preco     tipo_preco_produto,
+  regiao_id      uuid,
+  regiao_nome    text,
+  preco          numeric,
+  estoque        numeric
+)
+language sql stable as $$
+  select
+    p.id, p.descricao, m.nome, c.nome, p.codigo, p.codigo_fabrica, p.status, p.tipo_preco,
+    r.id, r.nome,
+    (fn_calcular_preco(p.id, r.id) ->> 'preco_final')::numeric,
+    coalesce((
+      select sum(ib.quantidade) from inventory_balances ib
+      join filiais f on f.id = ib.filial_id
+      where f.regiao_id = r.id and ib.produto_id = p.id
+    ), 0)
+  from produtos p
+  left join marcas m on m.id = p.marca_id
+  left join categorias c on c.id = p.categoria_id
+  cross join regioes r
+  where p.status = 'ativo'
+    and r.id = any(p_regioes)
+  order by p.descricao, r.ordem;
+$$;
