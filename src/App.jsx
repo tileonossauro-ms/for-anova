@@ -7,7 +7,8 @@ import Layout from './components/Layout.jsx'
 import Catalogo from './pages/Catalogo.jsx'
 import Regras from './pages/Regras.jsx'
 import Compras from './pages/Compras.jsx'
-import Placeholder from './pages/Placeholder.jsx'
+import Vendas from './pages/Vendas.jsx'
+import Estoque from './pages/Estoque.jsx'
 
 export default function App() {
   if (!isConfigured) return <NotConfigured />
@@ -23,8 +24,8 @@ export default function App() {
         <Route path="/" element={<Catalogo />} />
         <Route path="/regras" element={<Regras />} />
         <Route path="/compras" element={<Compras />} />
-        <Route path="/vendas" element={<Placeholder titulo="Vendas" />} />
-        <Route path="/estoque" element={<Placeholder titulo="Estoque" />} />
+        <Route path="/vendas" element={<Vendas />} />
+        <Route path="/estoque" element={<Estoque />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
