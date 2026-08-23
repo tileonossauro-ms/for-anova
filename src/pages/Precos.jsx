@@ -101,8 +101,9 @@ export default function Precos() {
     await carregarProdutos(); await carregarPrecos(cols); flash(`Taxa aplicada a ${alvo.length} produto(s)`)
   }
   function toggleSel(id) { setSel(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n }) }
-  function selecionarTodos() { setSel(new Set(filtrados.filter(p => !p.travado).map(p => p.id))) }
-  function limparSel() { setSel(new Set()) }
+  const selecionaveis = filtrados.filter(p => !p.travado)
+  const todosSel = selecionaveis.length > 0 && selecionaveis.every(p => sel.has(p.id))
+  function toggleTodos() { setSel(todosSel ? new Set() : new Set(selecionaveis.map(p => p.id))) }
 
   // barra de rolagem no TOPO, sincronizada com a tabela
   const topRef = useRef(null), tblRef = useRef(null)
@@ -122,11 +123,16 @@ export default function Precos() {
         <div className="px-3 pb-3 border-t border-[var(--fn-border)]"><Pagamentos embutido /></div>
       </details>
 
+      <details className="card p-0 mb-4">
+        <summary className="p-3 font-medium cursor-pointer select-none">Gerenciar regiões</summary>
+        <div className="px-3 pb-3 border-t border-[var(--fn-border)]">
+          <RegioesManager regioes={regioes} onChange={() => { carregarRegioes(); carregarProdutos() }} flash={flash} />
+        </div>
+      </details>
+
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <input className="input flex-1 min-w-[180px]" placeholder="Buscar produto…" value={busca} onChange={e => setBusca(e.target.value)} />
         <div className="flex items-center gap-2 text-sm flex-wrap">
-          <button className="py-2 px-3 rounded-lg border border-[var(--fn-border)]" onClick={selecionarTodos}>Selecionar todos</button>
-          <button className="py-2 px-2 text-[var(--fn-muted)]" onClick={limparSel}>limpar</button>
           <span className="text-[var(--fn-muted)]">{sel.size} selec.</span>
           <div className="flex rounded-lg border border-[var(--fn-border)] overflow-hidden">
             <button onClick={() => setMassaSinal('+')} className={'px-2 py-2 ' + (massaSinal === '+' ? 'bg-[var(--fn-brand)] text-white' : '')}>+</button>
@@ -167,7 +173,9 @@ export default function Precos() {
         <table className="text-sm border-collapse" style={{ minWidth: larguraTabela }}>
           <thead>
             <tr className="text-[var(--fn-muted)]">
-              <th style={stickyL} className="p-2 border-b border-[var(--fn-border)]"></th>
+              <th style={stickyL} className="p-2 border-b border-[var(--fn-border)] text-center">
+                <input type="checkbox" checked={todosSel} onChange={toggleTodos} title="selecionar todos" />
+              </th>
               <th style={stickyL2} className="text-left p-2 font-medium border-b border-[var(--fn-border)]">Produto</th>
               <th className="p-2 font-medium border-b border-[var(--fn-border)]">Tabela bruta</th>
               <th className="p-2 font-medium border-b border-[var(--fn-border)]">% desc</th>
@@ -311,6 +319,67 @@ function EditHeader({ r, onSave }) {
         <button className="text-[var(--fn-brand)] text-xs" onClick={salvar}>ok</button>
       </span>
     : <button className="text-[var(--fn-muted)]" onClick={abrir} title="taxa geral da região">✎ {pct}%</button>
+}
+
+// Gerenciar regiões: renomear, mudar índice, excluir e adicionar
+function RegioesManager({ regioes, onChange, flash }) {
+  const [rasc, setRasc] = useState({})
+  const [nova, setNova] = useState({ nome: '', indice: '' })
+  useEffect(() => {
+    const d = {}; regioes.forEach(r => { d[r.id] = { nome: r.nome, indice: (r.indice_padrao * 100).toString().replace('.', ',') } })
+    setRasc(d)
+  }, [regioes])
+
+  async function salvar(r) {
+    const v = rasc[r.id]; const ind = numDot(v.indice)
+    await supabase.from('regioes').update({ nome: v.nome, indice_padrao: ind == null ? r.indice_padrao : ind / 100 }).eq('id', r.id)
+    flash(`${v.nome} salva`); onChange()
+  }
+  async function excluir(r) {
+    if (!confirm(`Excluir a região "${r.nome}"? Os preços/estoque dela serão desvinculados.`)) return
+    await supabase.from('regioes').delete().eq('id', r.id)
+    flash('Região excluída'); onChange()
+  }
+  async function adicionar() {
+    if (!nova.nome.trim()) return
+    const slug = nova.nome.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '_').slice(0, 24)
+    const codigo = (slug || 'REG') + '_' + Date.now().toString().slice(-5)
+    const ind = numDot(nova.indice) || 0
+    const ordem = (regioes.at(-1)?.ordem || 0) + 10
+    const { error } = await supabase.from('regioes').insert({ codigo, nome: nova.nome.trim(), indice_padrao: ind / 100, ordem })
+    if (error) { flash('Erro: ' + error.message); return }
+    setNova({ nome: '', indice: '' }); flash('Região adicionada'); onChange()
+  }
+
+  return (
+    <div>
+      <div className="divide-y divide-[var(--fn-border)] mb-3">
+        {regioes.map(r => (
+          <div key={r.id} className="flex flex-wrap items-center gap-2 py-2 text-sm">
+            <input className="input flex-1 min-w-[160px]" value={rasc[r.id]?.nome || ''}
+              onChange={e => setRasc(s => ({ ...s, [r.id]: { ...s[r.id], nome: e.target.value } }))} />
+            <div className="flex items-center gap-1">
+              <input className="input w-20 text-right" value={rasc[r.id]?.indice || ''}
+                onChange={e => setRasc(s => ({ ...s, [r.id]: { ...s[r.id], indice: e.target.value } }))} />
+              <span className="text-[var(--fn-muted)]">%</span>
+            </div>
+            <button className="btn-primary py-1.5 px-3" onClick={() => salvar(r)}>Salvar</button>
+            <button className="text-red-500 px-2" onClick={() => excluir(r)}>excluir</button>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2 items-center">
+        <input className="input flex-1 min-w-[160px]" placeholder="Nova região (ex.: MS Interior)"
+          value={nova.nome} onChange={e => setNova(s => ({ ...s, nome: e.target.value }))} />
+        <div className="flex items-center gap-1">
+          <input className="input w-20 text-right" placeholder="taxa %" value={nova.indice}
+            onChange={e => setNova(s => ({ ...s, indice: e.target.value }))} />
+          <span className="text-[var(--fn-muted)]">%</span>
+        </div>
+        <button className="btn-primary py-2 px-4" onClick={adicionar}>Adicionar região</button>
+      </div>
+    </div>
+  )
 }
 
 // Gerenciador de MULT por região: um % nomeado que soma (+) ou desconta (−)

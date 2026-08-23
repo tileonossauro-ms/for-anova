@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 
@@ -75,10 +77,41 @@ export default function Catalogo() {
     })
   }, [produtos, busca, categoria])
 
+  function gerarPDF() {
+    if (colunas.length === 0) return
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' })
+    const data = new Date().toLocaleDateString('pt-BR')
+    doc.setFontSize(13); doc.text('Força Nova — Catálogo', 30, 30)
+    doc.setFontSize(9); doc.setTextColor(120)
+    doc.text(`Atualizado em ${data}`, 30, 44)
+
+    const head = [['Produto', ...colunas.map(c => c.nome)]]
+    const body = filtrados.map(p => ([
+      p.descricao + (p.codigo ? `  (RG ${p.codigo})` : ''),
+      ...colunas.map(c => { const v = p.cel[c.id]?.preco; return v == null ? '—' : nf.format(v) }),
+    ]))
+
+    autoTable(doc, {
+      head, body, startY: 54,
+      theme: 'grid',
+      styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
+      headStyles: { fillColor: [21, 128, 61], textColor: 255, fontSize: 7 },
+      columnStyles: { 0: { cellWidth: 240 } },
+      bodyStyles: { valign: 'middle' },
+      didParseCell: (d) => { if (d.section === 'body' && d.column.index > 0) d.cell.styles.halign = 'right' },
+    })
+    doc.save(`catalogo-forca-nova-${data.replace(/\//g, '-')}.pdf`)
+  }
+
   return (
     <div>
-      <input className="input mb-3" placeholder="Buscar por descrição, código, marca…"
-        value={busca} onChange={e => setBusca(e.target.value)} />
+      <div className="flex gap-2 mb-3">
+        <input className="input flex-1" placeholder="Buscar por descrição, código, marca…"
+          value={busca} onChange={e => setBusca(e.target.value)} />
+        <button className="btn-primary px-4 whitespace-nowrap" onClick={gerarPDF} disabled={colunas.length === 0}>
+          Baixar PDF
+        </button>
+      </div>
 
       {/* seleção de regiões */}
       <div className="mb-3">
