@@ -86,10 +86,13 @@ export default function Precos() {
     await carregarProdutos(); flash(p.travado ? 'Linha destravada' : 'Linha travada')
   }
 
+  const [massaAberta, setMassaAberta] = useState(false)
   const [massaPct, setMassaPct] = useState('')
   const [massaSinal, setMassaSinal] = useState('+')
   const [massaReg, setMassaReg] = useState('')
+  const [massaDesc, setMassaDesc] = useState('')
   useEffect(() => { if (!massaReg && colunas[0]) setMassaReg(colunas[0].id) }, [colunas, massaReg])
+
   async function aplicarMassa() {
     const pct = numDot(massaPct); if (pct == null || !massaReg) return
     const frac = (massaSinal === '-' ? -Math.abs(pct) : Math.abs(pct)) / 100
@@ -97,8 +100,17 @@ export default function Precos() {
     if (alvo.length === 0) { flash('Nenhum produto selecionado (ou todos travados)'); return }
     await supabase.from('produto_indice_regiao').upsert(
       alvo.map(p => ({ produto_id: p.id, regiao_id: massaReg, indice: frac })), { onConflict: 'produto_id,regiao_id' })
-    setSel(new Set()); setMassaPct('')
+    setMassaPct(''); setMassaAberta(false); setSel(new Set())
     await carregarProdutos(); await carregarPrecos(cols); flash(`Taxa aplicada a ${alvo.length} produto(s)`)
+  }
+  async function aplicarMassaDesconto() {
+    const pct = numDot(massaDesc); if (pct == null) return
+    const ids = filtrados.filter(p => sel.has(p.id) && !p.travado).map(p => p.id)
+    if (ids.length === 0) { flash('Nenhum produto selecionado (ou todos travados)'); return }
+    const { data, error } = await supabase.rpc('fn_mult_massa', { p_ids: ids, p_mult: pct / 100 })
+    if (error) { flash('Erro: ' + error.message); return }
+    setMassaDesc(''); setMassaAberta(false); setSel(new Set())
+    await carregarProdutos(); await carregarPrecos(cols); flash(`% desconto aplicado a ${data} produto(s)`)
   }
   function toggleSel(id) { setSel(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n }) }
   const selecionaveis = filtrados.filter(p => !p.travado)
@@ -118,6 +130,45 @@ export default function Precos() {
     <div>
       {msg && <div className="fixed top-16 right-4 bg-[var(--fn-brand)] text-white px-4 py-2 rounded-lg shadow z-30">{msg}</div>}
 
+      {massaAberta && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4" onClick={() => setMassaAberta(false)}>
+          <div className="card p-5 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold">Ações em massa — {sel.size} produto(s)</h3>
+              <button onClick={() => setMassaAberta(false)} className="text-[var(--fn-muted)] text-xl">×</button>
+            </div>
+
+            <div className="mb-4">
+              <div className="text-sm font-medium mb-1">% de desconto (custo)</div>
+              <div className="text-xs text-[var(--fn-muted)] mb-2">Aplica o MULTIPLDESCON e recalcula o custo (tabela × %).</div>
+              <div className="flex gap-2">
+                <input className="input w-28" placeholder="ex.: 42,156" value={massaDesc} onChange={e => setMassaDesc(e.target.value)} />
+                <span className="self-center text-[var(--fn-muted)]">%</span>
+                <button className="btn-primary py-2 px-4" onClick={aplicarMassaDesconto}>Aplicar</button>
+              </div>
+            </div>
+
+            <div className="border-t border-[var(--fn-border)] pt-4">
+              <div className="text-sm font-medium mb-1">Taxa de uma região</div>
+              <div className="text-xs text-[var(--fn-muted)] mb-2">Define a taxa (índice) dos selecionados numa região.</div>
+              <div className="flex flex-wrap gap-2">
+                <div className="flex rounded-lg border border-[var(--fn-border)] overflow-hidden">
+                  <button onClick={() => setMassaSinal('+')} className={'px-3 py-2 ' + (massaSinal === '+' ? 'bg-[var(--fn-brand)] text-white' : '')}>+</button>
+                  <button onClick={() => setMassaSinal('-')} className={'px-3 py-2 ' + (massaSinal === '-' ? 'bg-red-600 text-white' : '')}>−</button>
+                </div>
+                <input className="input w-20" placeholder="taxa %" value={massaPct} onChange={e => setMassaPct(e.target.value)} />
+                <select className="input flex-1 min-w-[140px]" value={massaReg} onChange={e => setMassaReg(e.target.value)}>
+                  {colunas.map(r => <option key={r.id} value={r.id}>{r.nome}</option>)}
+                </select>
+                <button className="btn-primary py-2 px-4" onClick={aplicarMassa}>Aplicar</button>
+              </div>
+            </div>
+
+            <p className="text-xs text-[var(--fn-muted)] mt-3">Linhas travadas 🔒 não são alteradas.</p>
+          </div>
+        </div>
+      )}
+
       <details className="card p-0 mb-4">
         <summary className="p-3 font-medium cursor-pointer select-none">Descontos por tipo de pagamento</summary>
         <div className="px-3 pb-3 border-t border-[var(--fn-border)]"><Pagamentos embutido /></div>
@@ -130,20 +181,11 @@ export default function Precos() {
         </div>
       </details>
 
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <input className="input flex-1 min-w-[180px]" placeholder="Buscar produto…" value={busca} onChange={e => setBusca(e.target.value)} />
-        <div className="flex items-center gap-2 text-sm flex-wrap">
-          <span className="text-[var(--fn-muted)]">{sel.size} selec.</span>
-          <div className="flex rounded-lg border border-[var(--fn-border)] overflow-hidden">
-            <button onClick={() => setMassaSinal('+')} className={'px-2 py-2 ' + (massaSinal === '+' ? 'bg-[var(--fn-brand)] text-white' : '')}>+</button>
-            <button onClick={() => setMassaSinal('-')} className={'px-2 py-2 ' + (massaSinal === '-' ? 'bg-red-600 text-white' : '')}>−</button>
-          </div>
-          <input className="input w-20" placeholder="taxa %" value={massaPct} onChange={e => setMassaPct(e.target.value)} />
-          <select className="input w-40" value={massaReg} onChange={e => setMassaReg(e.target.value)}>
-            {colunas.map(r => <option key={r.id} value={r.id}>{r.nome}</option>)}
-          </select>
-          <button className="btn-primary py-2 px-3" onClick={aplicarMassa} disabled={sel.size === 0}>Aplicar em massa</button>
-        </div>
+      <div className="flex items-center gap-2 mb-3">
+        <input className="input flex-1" placeholder="Buscar produto…" value={busca} onChange={e => setBusca(e.target.value)} />
+        <span className="text-sm text-[var(--fn-muted)] whitespace-nowrap">{sel.size} selec.</span>
+        <button className="py-2 px-4 rounded-lg border border-[var(--fn-border)] whitespace-nowrap disabled:opacity-40"
+          onClick={() => setMassaAberta(true)} disabled={sel.size === 0}>Ações em massa</button>
       </div>
 
       <div className="flex gap-1.5 overflow-x-auto pb-2 mb-1 items-center">

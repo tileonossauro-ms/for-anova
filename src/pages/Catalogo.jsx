@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 
 const nf = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+// arredondamento comercial: para a dezena mais próxima
+const arred = v => (v == null || isNaN(v)) ? null : Math.round(Number(v) / 10) * 10
 
 export default function Catalogo() {
   const { profile } = useAuth()
@@ -88,7 +90,7 @@ export default function Catalogo() {
     const head = [['Produto', ...colunas.map(c => c.nome)]]
     const body = filtrados.map(p => ([
       p.descricao + (p.codigo ? `  (RG ${p.codigo})` : ''),
-      ...colunas.map(c => { const v = p.cel[c.id]?.preco; return v == null ? '—' : nf.format(v) }),
+      ...colunas.map(c => { const v = p.cel[c.id]?.preco; return v == null ? '—' : nf.format(arred(v)) }),
     ]))
 
     autoTable(doc, {
@@ -208,7 +210,7 @@ function FragmentCell({ preco, estoque, temPreco }) {
   return (
     <>
       <td className="p-3 text-right font-semibold text-[var(--fn-brand)] border-l border-[var(--fn-border)] whitespace-nowrap">
-        {temPreco ? nf.format(preco) : '—'}
+        {temPreco ? nf.format(arred(preco)) : '—'}
       </td>
       <td className={'p-3 text-right whitespace-nowrap ' + corEstoque}>{temPreco ? est : '—'}</td>
     </>
