@@ -2,13 +2,14 @@
 
 /* Paleta sóbria, profissional — sem excesso de gradiente (seção 31) */
 :root {
-  --fn-bg: #f6f7f9;
+  --fn-bg: #f6f5f3;
   --fn-card: #ffffff;
-  --fn-border: #e4e7ec;
-  --fn-text: #1a1d21;
-  --fn-muted: #667085;
-  --fn-brand: #15803d;      /* verde "Força Nova" sóbrio */
-  --fn-brand-dark: #166534;
+  --fn-border: #e6e2dc;
+  --fn-text: #2b211b;        /* marrom bem escuro (quase preto) */
+  --fn-muted: #8a7d72;
+  --fn-brand: #e07a1a;       /* laranja Força Nova */
+  --fn-brand-dark: #b45f10;
+  --fn-brown: #4a3526;       /* marrom da marca */
 }
 
 html, body, #root { height: 100%; }

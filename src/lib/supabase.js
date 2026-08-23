@@ -10,3 +10,15 @@ export const isConfigured = Boolean(url && anon && !url.includes('SEU-PROJETO'))
 export const supabase = isConfigured
   ? createClient(url, anon)
   : null
+
+export const supabaseUrl = url
+export const supabaseAnon = anon
+
+// cria um usuário (email+senha) sem afetar a sessão do admin logado —
+// usa um cliente separado que não persiste sessão.
+export async function criarUsuario(email, password) {
+  const tmp = createClient(url, anon, {
+    auth: { persistSession: false, autoRefreshToken: false, storageKey: 'fn-admin-create' },
+  })
+  return tmp.auth.signUp({ email, password })
+}

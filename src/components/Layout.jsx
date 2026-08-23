@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.jsx'
+import Logo from './Logo.jsx'
 
 export default function Layout({ children }) {
   const { profile, isAdmin, signOut } = useAuth()
@@ -12,7 +13,7 @@ export default function Layout({ children }) {
     <div className="min-h-screen flex flex-col">
       <header className="card rounded-none border-x-0 border-t-0 sticky top-0 z-10">
         <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center gap-2">
-          <div className="font-extrabold text-[var(--fn-brand)] mr-2">Força Nova</div>
+          <div className="mr-2 shrink-0"><Logo height={30} /></div>
           <nav className="flex gap-1 flex-1 overflow-x-auto">
             {isAdmin && <NavLink to="/dashboard" className={linkCls}>Painel</NavLink>}
             <NavLink to="/" className={linkCls} end>Catálogo</NavLink>

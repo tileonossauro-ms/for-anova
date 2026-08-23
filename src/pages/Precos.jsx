@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { supabase } from '../lib/supabase.js'
 import Pagamentos from './Pagamentos.jsx'
 
-const nf = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
+const nf = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const pctFmt = v => Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 3 })
 const num = v => { const n = parseFloat(String(v).replace(/\./g, '').replace(',', '.')); return isNaN(n) ? null : n }
 const numDot = v => { const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? null : n }
 
@@ -258,7 +259,7 @@ export default function Precos() {
                   <CelEdit valor={p.tabela_bruta} fmt={v => v == null ? '—' : nf.format(v)}
                     onSave={v => salvarCustoPorTabela(p, num(v), p.multiplicador_desconto)} />
                   <CelEdit valor={p.multiplicador_desconto == null ? null : p.multiplicador_desconto * 100}
-                    fmt={v => v == null ? '—' : v.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + '%'}
+                    fmt={v => v == null ? '—' : pctFmt(v) + '%'}
                     onSave={v => salvarCustoPorTabela(p, p.tabela_bruta, numDot(v) / 100)} />
                   <CelEdit valor={p.custo_atual} fmt={v => v == null ? '—' : nf.format(v)} forte
                     onSave={v => salvarCustoDireto(p, num(v))} />
@@ -315,7 +316,7 @@ function FragTaxa({ ind, exc, preco, onSave }) {
   const [edit, setEdit] = useState(false)
   const [sinal, setSinal] = useState('+')
   const [v, setV] = useState('')
-  const pct = Math.round(ind * 1000) / 10
+  const pct = Math.round(ind * 100000) / 1000
   function abrir() { setSinal(ind < 0 ? '-' : '+'); setV(String(Math.abs(pct)).replace('.', ',')); setEdit(true) }
   function salvar() {
     setEdit(false)
@@ -336,7 +337,7 @@ function FragTaxa({ ind, exc, preco, onSave }) {
               <button className="text-[var(--fn-brand)] text-xs" onClick={salvar}>ok</button>
             </span>
           : <button onClick={abrir} className={cor} title={exc ? 'exceção deste produto (clique p/ editar)' : 'regra geral (clique p/ exceção)'}>
-              {ind >= 0 ? '↗ +' : '↘ '}{pct}%{exc ? ' *' : ''}
+              {ind >= 0 ? '↗ +' : '↘ '}{pctFmt(pct)}%{exc ? ' *' : ''}
             </button>}
       </td>
       <td className="p-2 text-right font-semibold whitespace-nowrap text-[var(--fn-brand)]">
@@ -350,7 +351,7 @@ function EditHeader({ r, onSave }) {
   const [edit, setEdit] = useState(false)
   const [sinal, setSinal] = useState('+')
   const [v, setV] = useState('')
-  const pct = Math.round(r.indice_padrao * 1000) / 10
+  const pct = Math.round(r.indice_padrao * 100000) / 1000
   function abrir() { setSinal(r.indice_padrao < 0 ? '-' : '+'); setV(String(Math.abs(pct)).replace('.', ',')); setEdit(true) }
   function salvar() { setEdit(false); const n = Math.abs(numDot(v) || 0); onSave(r, (sinal === '-' ? -n : n) / 100) }
   return edit
@@ -360,7 +361,7 @@ function EditHeader({ r, onSave }) {
           onKeyDown={e => e.key === 'Enter' && salvar()} />
         <button className="text-[var(--fn-brand)] text-xs" onClick={salvar}>ok</button>
       </span>
-    : <button className="text-[var(--fn-muted)]" onClick={abrir} title="taxa geral da região">✎ {pct}%</button>
+    : <button className="text-[var(--fn-muted)]" onClick={abrir} title="taxa geral da região">✎ {pctFmt(pct)}%</button>
 }
 
 // Gerenciar regiões: renomear, mudar índice, excluir e adicionar

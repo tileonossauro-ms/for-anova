@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase.js'
+import { supabase, criarUsuario } from '../lib/supabase.js'
 import { useAuth } from '../auth/AuthContext.jsx'
 
 export default function Usuarios() {
@@ -32,14 +32,38 @@ export default function Usuarios() {
     setTimeout(() => setMsg(''), 2500)
   }
 
+  const [novo, setNovo] = useState({ email: '', senha: '' })
+  const [erroNovo, setErroNovo] = useState('')
+  async function criar() {
+    setErroNovo('')
+    if (!novo.email.trim() || novo.senha.length < 6) { setErroNovo('Informe email e uma senha de 6+ caracteres'); return }
+    const { data, error } = await criarUsuario(novo.email.trim(), novo.senha)
+    if (error) { setErroNovo('Erro: ' + error.message); return }
+    const id = data?.user?.id
+    if (id) {
+      await supabase.from('profiles').upsert(
+        { id, nome: novo.email.split('@')[0], papel: 'vendedor', ativo: true }, { onConflict: 'id' })
+    }
+    setNovo({ email: '', senha: '' }); await carregar()
+    setMsg('✅ Usuário criado'); setTimeout(() => setMsg(''), 2500)
+  }
+
   return (
     <div className="space-y-4">
       {msg && <div className="fixed top-16 right-4 bg-[var(--fn-brand)] text-white px-4 py-2 rounded-lg shadow z-30">{msg}</div>}
 
       <div className="card p-4">
-        <h1 className="font-bold mb-1">Usuários</h1>
-        <p className="text-sm text-[var(--fn-muted)]">
-          Defina papel, região padrão e status de cada pessoa. O vendedor entra e já vê os preços da região dele.
+        <h1 className="font-bold mb-2">Novo usuário</h1>
+        <div className="flex flex-wrap gap-2 items-center">
+          <input className="input flex-1 min-w-[200px]" type="email" placeholder="email"
+            value={novo.email} onChange={e => setNovo(s => ({ ...s, email: e.target.value }))} />
+          <input className="input w-44" type="password" placeholder="senha (6+ caracteres)"
+            value={novo.senha} onChange={e => setNovo(s => ({ ...s, senha: e.target.value }))} />
+          <button className="btn-primary py-2 px-4" onClick={criar}>Criar</button>
+        </div>
+        {erroNovo && <div className="text-sm text-red-600 mt-2">{erroNovo}</div>}
+        <p className="text-xs text-[var(--fn-muted)] mt-2">
+          Cria o login (vendedor, já ativo). Depois ajuste a região padrão na lista abaixo.
         </p>
       </div>
 
@@ -74,17 +98,6 @@ export default function Usuarios() {
         ))}
       </div>
 
-      <div className="card p-4 bg-gray-50">
-        <h2 className="font-bold mb-1 text-sm">Como adicionar um novo vendedor</h2>
-        <ol className="list-decimal ml-5 text-sm text-[var(--fn-muted)] space-y-1">
-          <li>No Supabase: <b>Authentication → Users → Add user</b> (email + senha).</li>
-          <li>Pronto — a pessoa aparece aqui automaticamente como <b>Vendedor</b>.</li>
-          <li>Ajuste o nome, a <b>região padrão</b> e salve. Ela já entra vendo os preços da região dela.</li>
-        </ol>
-        <p className="text-xs text-[var(--fn-muted)] mt-2">
-          A criação do login fica no Supabase por segurança (exige a chave secreta, que nunca vai para o site).
-        </p>
-      </div>
     </div>
   )
 }
